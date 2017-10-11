@@ -39,6 +39,7 @@ public class FragmentPagerSupport extends FragmentActivity {
     static TreeMap<String, GearButton> headgearButtons; // Stores head gear buttons and their names
     static TreeMap<String, GearButton> clothingButtons; // Stores clothing buttons and their names
     static TreeMap<String, GearButton> shoeButtons;     // Stores shoes buttons and their names
+    TreeMap<String, Integer> abilitiesMap;              // Stores the ability names
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +64,14 @@ public class FragmentPagerSupport extends FragmentActivity {
             mDbHelper.onCreate(db);
             db.close();
             db = mDbHelper.getWritableDatabase();
+            populateAbilitiesTable(db);
         }
 
         // Close the database
         db.close();
 
         // Set up tab layout
-        TabLayout tabby = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout tabby = findViewById(R.id.tab_layout);
         tabby.setupWithViewPager(mPager);
     }
 
@@ -153,6 +155,9 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         // Add the gear button to the given map
         gearMap.put(name, btnTag);
+
+        // Add the ability to the abilities set
+        abilitiesMap.put(ability, 0);
     }
 
     public static int getId(String resName, Class<?> c) {
@@ -174,6 +179,21 @@ public class FragmentPagerSupport extends FragmentActivity {
         else {
             button.setBackgroundResource(0);
             button.setTag("Unchecked");
+        }
+    }
+
+    private void populateAbilitiesTable(SQLiteDatabase db){
+        Integer idCounter = 0;
+
+        for(String ability : abilitiesMap.keySet()) {
+            ContentValues values = new ContentValues();
+            values.put(GearContract.GearEntry.COLUMN_ABILITY, ability);
+
+            db.insert(GearContract.GearEntry.TABLE_ABILITIES, null, values);
+
+            // Insert the ability's id into the table and increment the id counter
+            abilitiesMap.put(ability, idCounter);
+            idCounter++;
         }
     }
 
