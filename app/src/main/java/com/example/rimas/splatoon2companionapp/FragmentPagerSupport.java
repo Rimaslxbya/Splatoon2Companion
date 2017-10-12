@@ -39,7 +39,8 @@ public class FragmentPagerSupport extends FragmentActivity {
     static TreeMap<String, GearButton> headgearButtons; // Stores head gear buttons and their names
     static TreeMap<String, GearButton> clothingButtons; // Stores clothing buttons and their names
     static TreeMap<String, GearButton> shoeButtons;     // Stores shoes buttons and their names
-    TreeMap<String, Integer> abilitiesMap;              // Stores the ability names
+    TreeMap<String, Integer> abilitiesMap;              // Stores ability names and their row id's
+    TreeMap<String, Integer> acquisitionsTypeMap;       // Stores acquisition types and their row id's
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,9 @@ public class FragmentPagerSupport extends FragmentActivity {
             db.close();
             db = mDbHelper.getWritableDatabase();
             populateAbilitiesTable(db);
+            populateAcquisitionsTable(db);
+            populateBrandsTable(db);
+            populateTypes(db);
         }
 
         // Close the database
@@ -99,20 +103,20 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         String line;
 
+        int id;
+
         try {
             line = buffR.readLine();
+
+            // Add headgear
+            for(id = nextId; line != null; id++){
+                StringTokenizer tokens = new StringTokenizer(line, ",");
+                createGearButton(id, tokens, type, gearMap);
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
             return nextId;
-        }
-
-        int id;
-
-        // Add headgear
-        for(id = nextId; line != null; id++){
-            StringTokenizer tokens = new StringTokenizer(line, ",");
-            createGearButton(id, tokens, type, gearMap);
         }
 
         return id;
@@ -156,8 +160,9 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Add the gear button to the given map
         gearMap.put(name, btnTag);
 
-        // Add the ability to the abilities set
+        // Populate Maps
         abilitiesMap.put(ability, 0);
+        acquisitionsTypeMap.put(acquisition, 0);
     }
 
     public static int getId(String resName, Class<?> c) {
@@ -182,6 +187,11 @@ public class FragmentPagerSupport extends FragmentActivity {
         }
     }
 
+    /**
+     * @brief Populates the abilities table
+     *
+     * @param db    The database with the abilities table that needs to be populated
+     */
     private void populateAbilitiesTable(SQLiteDatabase db){
         Integer idCounter = 0;
 
@@ -189,12 +199,105 @@ public class FragmentPagerSupport extends FragmentActivity {
             ContentValues values = new ContentValues();
             values.put(GearContract.GearEntry.COLUMN_ABILITY, ability);
 
+            // Insert into database
             db.insert(GearContract.GearEntry.TABLE_ABILITIES, null, values);
 
             // Insert the ability's id into the table and increment the id counter
             abilitiesMap.put(ability, idCounter);
             idCounter++;
         }
+    }
+
+    /**
+     * @brief Populates the acquisitions table
+     *
+     * @param db    The database with the acquisitions table that needs to be populated
+     */
+    private void populateAcquisitionsTable(SQLiteDatabase db){
+        Integer idCounter = 0;
+
+        for(String acquisitionType : acquisitionsTypeMap.keySet()) {
+            ContentValues values = new ContentValues();
+            values.put(GearContract.GearEntry.COLUMN_ACQUISITION, acquisitionType);
+
+            // Insert into database
+            db.insert(GearContract.GearEntry.TABLE_ACQUISITION_METHODS, null, values);
+
+            // Insert the acquisition type's id into the table and increment the id counter
+            abilitiesMap.put(acquisitionType, idCounter);
+            idCounter++;
+        }
+    }
+
+    /**
+     * @brief Reads in Splatoon2BrandBias.csv and uses it to populate the brands table
+     *
+     * @param db    The database with the brands table that needs to be populated
+     */
+    private void populateBrandsTable(SQLiteDatabase db){
+        AssetManager am = this.getAssets();
+        InputStream is;
+
+        try {
+            is = am.open("Splatoon2BrandBias.csv");
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader buffR = new BufferedReader(isr);
+
+        String line;
+
+        try {
+            line = buffR.readLine();
+
+            // Add brands and their biases
+            for(int id = 0; line != null; id++){
+                StringTokenizer tokens = new StringTokenizer(line, ",");
+
+                String brand = tokens.nextToken();
+                String commonAbility = tokens.nextToken();
+                String uncommonAbility = tokens.nextToken();
+
+                ContentValues values = new ContentValues();
+                values.put(GearContract.GearEntry.COLUMN_BRAND, brand);
+                values.put(GearContract.GearEntry.COLUMN_COMMON_ABILITY, abilitiesMap.get(commonAbility));
+                values.put(GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY, abilitiesMap.get(uncommonAbility));
+
+                // Insert into database
+                db.insert(GearContract.GearEntry.TABLE_BRANDS, null, values);
+
+                line = buffR.readLine();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        return;
+    }
+
+    private void populateTypes(SQLiteDatabase db){
+
+        ContentValues values = new ContentValues();
+
+        // Insert head
+        values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "head");
+        db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
+
+        // Insert clothes
+        values.clear();
+        values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "clothes");
+        db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
+
+        // Insert shoes
+        values.clear();
+        values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "shoes");
+        db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
     }
 
     public static class MyAdapter extends FragmentPagerAdapter {
