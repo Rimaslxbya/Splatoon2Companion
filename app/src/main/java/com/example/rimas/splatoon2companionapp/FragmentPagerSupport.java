@@ -41,6 +41,9 @@ public class FragmentPagerSupport extends FragmentActivity {
     static TreeMap<String, GearButton> shoeButtons;     // Stores shoes buttons and their names
     TreeMap<String, Integer> abilitiesMap;              // Stores ability names and their row id's
     TreeMap<String, Integer> acquisitionsTypeMap;       // Stores acquisition types and their row id's
+    TreeMap<String, Integer> brandsMap;                 // Stores brand names and their row id's
+    TreeMap<String, Integer> typesMap;                  // Stores types and their row id's
+    TreeMap<GearButton, Integer> gearToDbId;            // Stores gear buttons and their row id's
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         mAdapter = new MyAdapter(getSupportFragmentManager());
 
-        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
 
         // Creates all the gear buttons using the csv files
@@ -270,6 +273,8 @@ public class FragmentPagerSupport extends FragmentActivity {
                 // Insert into database
                 db.insert(GearContract.GearEntry.TABLE_BRANDS, null, values);
 
+                brandsMap.put(brand, id);
+
                 line = buffR.readLine();
             }
         }
@@ -288,16 +293,68 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Insert head
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "head");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
+        typesMap.put("head", 0);
 
         // Insert clothes
         values.clear();
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "clothes");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
+        typesMap.put("clothes", 1);
 
         // Insert shoes
         values.clear();
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "shoes");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
+        typesMap.put("shoes", 2);
+    }
+
+    /**
+     * @brief Populates the Gear table
+     *
+     * @param db    The database to populate
+     */
+    private void populateGear(SQLiteDatabase db){
+        int id = 0;
+        id = populateGearFromMap(db, headgearButtons, id);
+        id = populateGearFromMap(db, clothingButtons, id);
+        populateGearFromMap(db, shoeButtons, id);
+    }
+
+    /**
+     * @brief: Populates the Gear table with the gear information from a TreeMap of gear
+     *
+     * @param db    A database with a Gear table that needs entries
+     * @param gMap  A map of gear to be inserted into the table
+     * @param id    The row id for the next entry in the table
+     * */
+    private int populateGearFromMap(SQLiteDatabase db, TreeMap<String, GearButton> gMap, int id){
+
+        for(GearButton gButt : gMap.values()){
+            String name = gButt.getName();
+            String brand = gButt.getBrand();
+            String ability = gButt.getAbility();
+            String acquisitionType = gButt.getAcquisitionMethod();
+            String type = gButt.getType();
+            int rarity = gButt.getRarity();
+            boolean availability = gButt.getAvailability();
+
+            ContentValues values = new ContentValues();
+            values.put(GearContract.GearEntry.COLUMN_GNAME, name);
+            values.put(GearContract.GearEntry.COLUMN_TYPE_ID, typesMap.get(type));
+            values.put(GearContract.GearEntry.COLUMN_BRAND_ID, brandsMap.get(brand));
+            values.put(GearContract.GearEntry.COLUMN_ABILITY_ID, abilitiesMap.get(ability));
+            values.put(GearContract.GearEntry.COLUMN_ACQUISITION_METHOD_ID, acquisitionsTypeMap.get(acquisitionType));
+            values.put(GearContract.GearEntry.COLUMN_RARITY, rarity);
+            values.put(GearContract.GearEntry.COLUMN_AVAILABLE, availability);
+            values.put(GearContract.GearEntry.COLUMN_SELECTED, false);
+
+            // Insert into database
+            db.insert(GearContract.GearEntry.TABLE_GEAR, null, values);
+            gearToDbId.put(gButt, id);
+            id++;
+        }
+
+        return id;
     }
 
     public static class MyAdapter extends FragmentPagerAdapter {
