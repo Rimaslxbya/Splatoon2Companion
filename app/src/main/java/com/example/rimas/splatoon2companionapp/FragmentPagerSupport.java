@@ -72,6 +72,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             populateAcquisitionsTable(db);
             populateBrandsTable(db);
             populateTypes(db);
+            populateGear(db);
         }
 
         // Close the database
