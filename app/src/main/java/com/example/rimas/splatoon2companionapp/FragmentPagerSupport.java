@@ -145,10 +145,11 @@ public class FragmentPagerSupport extends FragmentActivity {
         String ability = tokens.nextToken();
         String rarity = tokens.nextToken();
 
-        int drawableResource = getId(type + "_" + name.replace(" ", "_"), R.drawable.class);
+        String drawableName = type + "_" + name.replace(" ", "_").toLowerCase();
+        int drawableResource = getResources().getIdentifier(drawableName, "drawable", getPackageName());
 
         // If no drawable resource is found, use the resource at the top
-        if(drawableResource == -1) drawableResource = 0;
+        if(drawableResource == 0) drawableResource = R.drawable.ability_doubler;
 
         // Set the properties for button
         GearButton btnTag = new GearButton(this);
@@ -178,17 +179,6 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Populate Maps
         abilitiesMap.put(ability, 0);
         acquisitionsTypeMap.put(acquisition, 0);
-    }
-
-    public static int getId(String resName, Class<?> c) {
-
-        try {
-            Field idField = c.getDeclaredField(resName.toLowerCase());
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 
     private static void flipGearButtonState(ImageButton button) {
