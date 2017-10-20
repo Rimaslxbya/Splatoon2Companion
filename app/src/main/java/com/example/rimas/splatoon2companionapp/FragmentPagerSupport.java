@@ -434,17 +434,20 @@ public class FragmentPagerSupport extends FragmentActivity {
                                  Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_pager_list, container, false);
             LinearLayout layout = v.findViewById(R.id.linear_layout_id);
-            gearButtons = new TreeMap<>();
+
             switch(mNum)
             {
                 case 0:
-                    addAllGear(R.drawable.head_18k_aviators, R.drawable.head_white_headband, "head_", layout);
+                    gearButtons = addAllGear(headgearButtons, layout);
+                    loadGearCheckedState("head");
                     break;
                 case 1:
-                    addAllGear(R.drawable.clothing_anchor_sweat, R.drawable.clothing_zink_layered_ls, "clothing_", layout);
+                    gearButtons = addAllGear(clothingButtons, layout);
+                    loadGearCheckedState("clothing");
                     break;
                 case 2:
-                    addAllGear(R.drawable.shoes_acerola_rain_boots, R.drawable.shoes_yellow_mesh_sneakers, "shoes_", layout);
+                    gearButtons = addAllGear(shoeButtons, layout);
+                    loadGearCheckedState("shoes");
                     break;
             }
 
@@ -463,55 +466,52 @@ public class FragmentPagerSupport extends FragmentActivity {
             saveGearSelection();
         }
 
-        private void addAllGear(int firstDrawable, int lastDrawable, String prefix, LinearLayout layout) {
-            //the layout on which you are working
+        /**
+         * @brief Adds all of the gear in the passed map of gear items, into the fragment.
+         *
+         * @param mapOfGearItems    The map of gear buttons to add to the fragment.
+         * @param layout            The layout in the fragment to add them to.
+         * @return                  The passed map of gear items
+         */
+        private TreeMap<String, GearButton> addAllGear(TreeMap<String, GearButton> mapOfGearItems, LinearLayout layout) {
+            // the layout on which you are working
             layout.setOrientation(LinearLayout.VERTICAL);
 
-            //Save the dimensions of splat.png to use as the dimensions for the buttons
-            final BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inJustDecodeBounds = true;
-            BitmapFactory.decodeResource(getResources(), R.drawable.splat, opt);
-            final float scale = getResources().getDisplayMetrics().density;
+            // The position of the button in a row
+            int rowPosition = 0;
 
-            // Convert from px to dp during assignment
-            final int buttonHeight = opt.outHeight * (int) (scale + 0.5f);
-            final int buttonWidth = opt.outWidth * (int) (scale + 0.5f);
+            // Stores the current row
+            LinearLayout row = new LinearLayout(this.getContext());
 
-            for(int j = 0; j <= (lastDrawable)/4; j++) {
-                LinearLayout row = new LinearLayout(this.getContext());
-                row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
+            for(GearButton btnTag : mapOfGearItems.values()) {
 
-                for (int i = firstDrawable + (j * 4); i < (firstDrawable + (j * 4)) + 4 && i <= lastDrawable; i++) {
-                    // Identify if Headgear
-                    String name = getResources().getResourceEntryName(i);
-
-                    if (!name.contains(prefix))
-                        continue;
-
-                    //set the properties for button
-                    GearButton btnTag = new GearButton(this.getContext());
-                    btnTag.setLayoutParams(new LinearLayout.LayoutParams(buttonWidth, buttonHeight));
-                    btnTag.setName(name);
-                    btnTag.setType(prefix);
-                    btnTag.setImageResource(i);
-                    btnTag.setBackgroundResource(0);
-                    btnTag.setId(i+1 + (j*4));
-                    btnTag.setTag("Unchecked");
-
-                    gearButtons.put(btnTag.getName(), btnTag);
-
-                    //add button to the layout
-                    row.addView(btnTag);
+                // If there are less than 4 buttons in the row, keep adding to this row
+                if(rowPosition < 4){
+                    rowPosition++;
                 }
 
-                layout.addView(row);
+                // Otherwise, finish the row and start a new one
+                else{
+                    // Add the row to the layout
+                    layout.addView(row);
 
-                if(j > 50) break;
+                    // Create the next row
+                    row = new LinearLayout(this.getContext());
+                    row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    rowPosition = 0;
+                }
+
+                // Add button to the layout
+                row.addView(btnTag);
             }
 
-            // Load the checked state of all the gear buttons created in this method
-            loadGearCheckedState(prefix.substring(0, prefix.length()-1));
+            // Add the final row to the layout if it was not already added
+            if(rowPosition != 0)
+                layout.addView(row);
+
+            return mapOfGearItems;
 
         }
 
