@@ -126,6 +126,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             for(id = nextId; line != null; id++){
                 StringTokenizer tokens = new StringTokenizer(line, ",");
                 createGearButton(id, tokens, type, gearMap);
+                line = buffR.readLine();
             }
         }
         catch (IOException e) {
