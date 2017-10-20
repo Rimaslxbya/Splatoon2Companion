@@ -84,6 +84,17 @@ public class FragmentPagerSupport extends FragmentActivity {
 
     private void createGear(){
         AssetManager am = this.getAssets();
+
+        // Initialize all of the maps
+        headgearButtons = new TreeMap<>();
+        clothingButtons = new TreeMap<>();
+        shoeButtons = new TreeMap<>();
+        abilitiesMap = new TreeMap<>();
+        acquisitionsTypeMap = new TreeMap<>();
+        brandsMap = new TreeMap<>();
+        typesMap = new TreeMap<>();
+        gearToDbId = new TreeMap<>();
+
         int nextId = createGearSet(am, "Splatoon2Headgear.csv", "head", 0, headgearButtons);
         nextId = createGearSet(am, "Splatoon2Clothing.csv", "clothing", nextId, clothingButtons);
         createGearSet(am, "Splatoon2Shoes.csv", "shoes", nextId, shoeButtons);
