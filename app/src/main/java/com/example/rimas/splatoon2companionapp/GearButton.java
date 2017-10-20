@@ -1,6 +1,7 @@
 package com.example.rimas.splatoon2companionapp;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.StringTokenizer;
 
@@ -8,7 +9,7 @@ import java.util.StringTokenizer;
  * Created by Rimas on 9/27/2017.
  */
 
-public class GearButton extends android.support.v7.widget.AppCompatImageButton {
+public class GearButton extends android.support.v7.widget.AppCompatImageButton implements Comparable<GearButton>{
 
     private String name;
     private String brand;
@@ -95,5 +96,11 @@ public class GearButton extends android.support.v7.widget.AppCompatImageButton {
     public void setImageResource(int _imageIndex) {
         super.setImageResource(_imageIndex);
         setImageIndex(_imageIndex);
+    }
+
+    @Override
+    public int compareTo(@NonNull GearButton gearButton) {
+
+        return gearButton.getName().compareToIgnoreCase(name);
     }
 }
