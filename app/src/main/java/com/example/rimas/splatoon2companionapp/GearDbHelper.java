@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class GearDbHelper extends SQLiteOpenHelper {
-    private static final String SQL_CREATE_GEAR_TABLE =  "CREATE TABLE "
+    private static final String SQL_CREATE_GEAR_TABLE =  "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_GEAR + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_GNAME + " TEXT, "
@@ -23,41 +23,41 @@ public class GearDbHelper extends SQLiteOpenHelper {
             + GearContract.GearEntry.COLUMN_AVAILABLE + " INTEGER, "
             + GearContract.GearEntry.COLUMN_SELECTED + " INTEGER)";
 
-    private static final String SQL_CREATE_ABILITIES_TABLE = "CREATE TABLE "
+    private static final String SQL_CREATE_ABILITIES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_ABILITIES + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_ABILITY + " TEXT)";
 
-    private static final String SQL_CREATE_ACQUISITION_METHOD_TABLE = "CREATE TABLE "
+    private static final String SQL_CREATE_ACQUISITION_METHOD_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_ACQUISITION_METHODS + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_ACQUISITION + " TEXT)";
 
-    private static final String SQL_CREATE_BRANDS_TABLE = "CREATE TABLE "
+    private static final String SQL_CREATE_BRANDS_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_BRANDS + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_BRAND + " TEXT, "
             + GearContract.GearEntry.COLUMN_COMMON_ABILITY + " INTEGER, "
             + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " INTEGER)";
 
-    private static final String SQL_CREATE_GEAR_TO_ABILITIES_TABLE = "CREATE TABLE "
+    private static final String SQL_CREATE_GEAR_TO_ABILITIES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_GEAR_TO_ABILITIES + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_GEAR_ID + " INTEGER, "
             + GearContract.GearEntry.COLUMN_ABILITY_ID + " INTEGER)";
 
-    private static final String SQL_CREATE_TYPES_TABLE = "CREATE TABLE "
+    private static final String SQL_CREATE_TYPES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_TYPES + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_TYPE_NAME + " TEXT)";
 
     private static final String SQL_WIPE_DATABASE_CLEAN =
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_ABILITIES + "; " +
+            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_GEAR + "; " +
             "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_ACQUISITION_METHODS + "; " +
             "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_BRANDS + "; " +
             "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_GEAR_TO_ABILITIES + "; " +
             "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_TYPES + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_GEAR + ";";
+            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_ABILITIES + ";";
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Splatoon2Companion.db";
