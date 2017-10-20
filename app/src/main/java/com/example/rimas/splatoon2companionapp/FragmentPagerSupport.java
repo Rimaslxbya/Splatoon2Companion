@@ -64,7 +64,7 @@ public class FragmentPagerSupport extends FragmentActivity {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // If the database is empty, create and populate the database
-        if(!mDbHelper.doesTableExist(db, GearContract.GearEntry.TABLE_GEAR)) {
+        if(!mDbHelper.doesTableExist(db, GearContract.GearEntry.TABLE_GEAR) || mDbHelper.isTableEmpty(db, GearContract.GearEntry.TABLE_GEAR)) {
             mDbHelper.onCreate(db);
             db.close();
             db = mDbHelper.getWritableDatabase();

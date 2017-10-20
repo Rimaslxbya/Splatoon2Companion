@@ -99,4 +99,14 @@ public class GearDbHelper extends SQLiteOpenHelper {
             return false;
         }
     }
+
+    public boolean isTableEmpty(SQLiteDatabase db, String tableName){
+        Cursor cursor = db.rawQuery("SELECT count(*) FROM "+tableName, null);
+        cursor.moveToFirst();
+        int rowCount = cursor.getInt(0);
+        if(rowCount > 0)
+            return false;
+        else
+            return true;
+    }
 }
