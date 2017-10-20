@@ -535,24 +535,6 @@ public class FragmentPagerSupport extends FragmentActivity {
             db.close();
         }
 
-        private void insertGearEntries() {
-            GearDbHelper mDbHelper = new GearDbHelper(getContext());
-            SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-            for(GearButton gear : gearButtons.values()) {
-                int toggled = gear.getTag() == "Checked" ? 1 : 0;
-
-                ContentValues values = new ContentValues();
-                values.put(GearContract.GearEntry.COLUMN_GNAME, gear.getName());
-                values.put(GearContract.GearEntry.COLUMN_TYPE_ID, gear.getType());
-                values.put(GearContract.GearEntry.COLUMN_SELECTED, toggled);
-
-                db.insert(GearContract.GearEntry.TABLE_GEAR, null, values);
-            }
-
-            db.close();
-        }
-
         /**
          * @brief Checks the given database to see if the given button should be toggled.
          *
@@ -578,14 +560,6 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Get the query result
             Cursor cursor = db.query(GearContract.GearEntry.TABLE_GEAR, projection, selection,
                     selectionArgs, null, null, null);
-
-            // If no results were found, populate the database and return
-            if(cursor.getCount() == 0) {
-                cursor.close();
-                db.close();
-                insertGearEntries();
-                return;
-            }
 
             while(cursor.moveToNext()) {
                 // Get the name of the gear button to check
