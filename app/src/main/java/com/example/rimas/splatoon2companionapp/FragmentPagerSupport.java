@@ -170,9 +170,8 @@ public class FragmentPagerSupport extends FragmentActivity {
         btnTag.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View v){
-                ImageButton button = (ImageButton) v;
-
-                flipGearButtonState(button);
+                GearButton button = (GearButton) v;
+                button.flipToggledState();
             }
         });
 
@@ -182,17 +181,6 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Populate Maps
         abilitiesMap.put(ability, 0);
         acquisitionsTypeMap.put(acquisition, 0);
-    }
-
-    private static void flipGearButtonState(ImageButton button) {
-        if(button.getTag() == "Unchecked") {
-            button.setBackgroundResource(R.drawable.splat);
-            button.setTag("Checked");
-        }
-        else {
-            button.setBackgroundResource(0);
-            button.setTag("Unchecked");
-        }
     }
 
     /**
@@ -603,8 +591,8 @@ public class FragmentPagerSupport extends FragmentActivity {
                 // Get whether or not the gear button should be toggled
                 int toggled = cursor.getInt(1);
 
-                // If the gear button is registered as toggled, toggle the button by flipping its state
-                if (toggled == 1) flipGearButtonState(btn);
+                // If the gear button is registered as toggled, toggle the button
+                btn.setToggledState(toggled == 1);
             }
 
             // Free the cursor
