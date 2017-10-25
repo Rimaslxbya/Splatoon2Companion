@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import java.io.BufferedReader;
@@ -120,6 +119,16 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         String line;
 
+        //Save the dimensions of splat.png to use as the dimensions for the buttons
+        final BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), R.drawable.splat, opt);
+        final float scale = getResources().getDisplayMetrics().density;
+
+        // Convert from px to dp during assignment
+        final int buttonHeight = opt.outHeight * (int) (scale + 0.5f);
+        final int buttonWidth = opt.outWidth * (int) (scale + 0.5f);
+
         int id;
 
         try {
@@ -128,7 +137,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Add headgear
             for(id = nextId; line != null; id++){
                 StringTokenizer tokens = new StringTokenizer(line, ",");
-                createGearButton(id, tokens, type, gearMap);
+                createGearButton(id, tokens, type, gearMap,buttonWidth,buttonHeight);
                 line = buffR.readLine();
             }
         }
@@ -141,7 +150,7 @@ public class FragmentPagerSupport extends FragmentActivity {
     }
 
     private void createGearButton(int id, StringTokenizer tokens, String type,
-                                  TreeMap<String, GearButton> gearMap) {
+                                  TreeMap<String, GearButton> gearMap, int buttonWidth, int buttonHeight) {
         String name = tokens.nextToken();
         String brand = tokens.nextToken();
         String acquisition = tokens.nextToken();
@@ -156,6 +165,7 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         // Set the properties for button
         GearButton btnTag = new GearButton(this);
+        btnTag.setLayoutParams(new LinearLayout.LayoutParams(buttonWidth, buttonHeight));
         btnTag.setName(name);
         btnTag.setType(type);
         btnTag.setBrand(brand);
