@@ -103,4 +103,32 @@ public class GearButton extends android.support.v7.widget.AppCompatImageButton i
 
         return gearButton.getName().compareToIgnoreCase(name);
     }
+
+    public void setToggledState(boolean state){
+        if(state) {
+            setBackgroundResource(R.drawable.splat);
+            setTag("Checked");
+        }
+        else {
+            setBackgroundResource(0);
+            setTag("Unchecked");
+        }
+    }
+
+    public boolean getToggledState(){
+        return getTag() == "Checked";
+    }
+
+    public boolean flipToggledState(){
+        if(getTag() == "Unchecked") {
+            setBackgroundResource(R.drawable.splat);
+            setTag("Checked");
+        }
+        else {
+            setBackgroundResource(0);
+            setTag("Unchecked");
+        }
+
+        return getToggledState();
+    }
 }
