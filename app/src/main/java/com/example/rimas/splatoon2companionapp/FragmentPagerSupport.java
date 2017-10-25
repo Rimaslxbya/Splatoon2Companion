@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -39,10 +38,10 @@ public class FragmentPagerSupport extends FragmentActivity {
     static TreeMap<String, GearButton> headgearButtons; // Stores head gear buttons and their names
     static TreeMap<String, GearButton> clothingButtons; // Stores clothing buttons and their names
     static TreeMap<String, GearButton> shoeButtons;     // Stores shoes buttons and their names
+    static TreeMap<String, Integer> typesMap;           // Stores types and their row id's
     TreeMap<String, Integer> abilitiesMap;              // Stores ability names and their row id's
     TreeMap<String, Integer> acquisitionsTypeMap;       // Stores acquisition types and their row id's
     TreeMap<String, Integer> brandsMap;                 // Stores brand names and their row id's
-    TreeMap<String, Integer> typesMap;                  // Stores types and their row id's
     TreeMap<GearButton, Integer> gearToDbId;            // Stores gear buttons and their row id's
 
     @Override
@@ -74,6 +73,9 @@ public class FragmentPagerSupport extends FragmentActivity {
             populateTypes(db);
             populateGear(db);
         }
+        else{
+            populateTypesMap(db);
+        }
 
         // Close the database
         db.close();
@@ -90,10 +92,10 @@ public class FragmentPagerSupport extends FragmentActivity {
         headgearButtons = new TreeMap<>();
         clothingButtons = new TreeMap<>();
         shoeButtons = new TreeMap<>();
+        typesMap = new TreeMap<>();
         abilitiesMap = new TreeMap<>();
         acquisitionsTypeMap = new TreeMap<>();
         brandsMap = new TreeMap<>();
-        typesMap = new TreeMap<>();
         gearToDbId = new TreeMap<>();
 
         int nextId = createGearSet(am, "Splatoon2Headgear.csv", "head", 0, headgearButtons);
@@ -296,19 +298,42 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Insert head
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "head");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
-        typesMap.put("head", 0);
 
-        // Insert clothes
+        // Insert clothing
         values.clear();
-        values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "clothes");
+        values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "clothing");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
-        typesMap.put("clothes", 1);
 
         // Insert shoes
         values.clear();
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "shoes");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
-        typesMap.put("shoes", 2);
+
+        populateTypesMap(db);
+    }
+
+    private void populateTypesMap(SQLiteDatabase db){
+        // Requested columns
+        String[] projection = {
+                GearContract.GearEntry._ID,
+                GearContract.GearEntry.COLUMN_TYPE_NAME
+        };
+
+        // Get the query result
+        Cursor cursor = db.query(GearContract.GearEntry.TABLE_TYPES, projection, null,
+                null, null, null, null);
+
+        while(cursor.moveToNext()) {
+            // Get the gear type name and its row id in the table
+            String typeId = cursor.getString(0);
+            String typeName = cursor.getString(1);
+
+            // Insert the type and row id into the map
+            typesMap.put(typeName, Integer.parseInt(typeId));
+        }
+
+        // Free the cursor
+        cursor.close();
     }
 
     /**
@@ -436,6 +461,12 @@ public class FragmentPagerSupport extends FragmentActivity {
             View v = inflater.inflate(R.layout.fragment_pager_list, container, false);
             LinearLayout layout = v.findViewById(R.id.linear_layout_id);
 
+            if(gearButtons != null){
+                for(GearButton gearButt : gearButtons.values()){
+                    ((ViewGroup)gearButt.getParent()).removeView(gearButt);
+                }
+            }
+
             switch(mNum)
             {
                 case 0:
@@ -556,7 +587,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             String selection = GearContract.GearEntry.COLUMN_TYPE_ID + " = ?";
 
             // Argument for WHERE statement
-            String[] selectionArgs = { prefix };
+            String[] selectionArgs = { Integer.toString(typesMap.get(prefix)) };
 
             // Get the query result
             Cursor cursor = db.query(GearContract.GearEntry.TABLE_GEAR, projection, selection,
@@ -585,12 +616,13 @@ public class FragmentPagerSupport extends FragmentActivity {
             String[] projection = {
                     GearContract.GearEntry._ID,
                     GearContract.GearEntry.COLUMN_GNAME,
+                    GearContract.GearEntry.COLUMN_TYPE_ID,
                     GearContract.GearEntry.COLUMN_SELECTED
             };
 
-            //Cursor cursor = db.query(GearContract.GearEntry.TABLE_NAME_GEAR, projection, null, null, null, null, null);
+            Cursor cursor = db.query(GearContract.GearEntry.TABLE_GEAR, projection, null, null, null, null, null);
 
-            Cursor cursor = db.rawQuery("PRAGMA table_info(" + GearContract.GearEntry.TABLE_GEAR + ")", null);
+            //Cursor cursor = db.rawQuery("PRAGMA table_info(" + GearContract.GearEntry.TABLE_GEAR + ")", null);
 
             int cnt = cursor.getColumnCount();
 
