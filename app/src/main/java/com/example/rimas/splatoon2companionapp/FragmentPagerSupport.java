@@ -512,6 +512,8 @@ public class FragmentPagerSupport extends FragmentActivity {
 
             // Stores the current row
             LinearLayout row = new LinearLayout(this.getContext());
+            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
 
             for(GearButton btnTag : mapOfGearItems.values()) {
 
@@ -525,12 +527,15 @@ public class FragmentPagerSupport extends FragmentActivity {
                     // Add the row to the layout
                     layout.addView(row);
 
+                    int[] pos = new int[2];
+                    row.getLocationOnScreen(pos);
+
                     // Create the next row
                     row = new LinearLayout(this.getContext());
                     row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                    rowPosition = 0;
+                    rowPosition = 1;
                 }
 
                 // Add button to the layout
