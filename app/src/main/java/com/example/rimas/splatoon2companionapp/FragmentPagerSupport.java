@@ -544,7 +544,13 @@ public class FragmentPagerSupport extends FragmentActivity {
                         GearButton button = (GearButton) v;
 
                         button.flipToggledState();
-                        popUpWindow.showAsDropDown(button);
+
+                        boolean toggled = button.getToggledState();
+
+                        if(toggled)
+                            popUpWindow.showAsDropDown(button);
+                        else
+                            popUpWindow.dismiss();
                     }
                 });
 
