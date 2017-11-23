@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -555,14 +556,15 @@ public class FragmentPagerSupport extends FragmentActivity {
                     }
                 });
 
-                TextView tvMsg = new TextView(getContext());
-                tvMsg.setText("Hi this is pop up window...");
+                ImageView brandImg = new ImageView(getContext());
+                int brandDrawable = getResources().getIdentifier(btnTag.getBrand().toLowerCase(), "drawable", getActivity().getPackageName());
+                brandImg.setImageResource(brandDrawable);
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 LinearLayout containerLayout = new LinearLayout(getContext());
                 containerLayout.setOrientation(LinearLayout.VERTICAL);
-                containerLayout.addView(tvMsg, layoutParams);
+                containerLayout.addView(brandImg, layoutParams);
                 popUpWindow.setContentView(containerLayout);
             }
 
