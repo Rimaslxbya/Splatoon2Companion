@@ -538,6 +538,7 @@ public class FragmentPagerSupport extends FragmentActivity {
                 row.addView(btnTag);
 
                 final PopupWindow popUpWindow = new PopupWindow(getActivity());
+                popUpWindow.setOutsideTouchable(true);
                 btnTag.setOnClickListener(new View.OnClickListener(){
 
                     public void onClick(View v){
