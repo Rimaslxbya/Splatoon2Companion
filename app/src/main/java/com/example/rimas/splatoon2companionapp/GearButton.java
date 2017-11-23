@@ -11,6 +11,9 @@ import java.util.StringTokenizer;
 
 public class GearButton extends android.support.v7.widget.AppCompatImageButton implements Comparable<GearButton>{
 
+    public static final String CHECKED = "Checked";
+    public static final String UNCHECKED = "Unchecked";
+
     private String name;
     private String brand;
     private String acquisitionMethod;
@@ -107,26 +110,26 @@ public class GearButton extends android.support.v7.widget.AppCompatImageButton i
     public void setToggledState(boolean state){
         if(state) {
             setBackgroundResource(R.drawable.splat);
-            setTag("Checked");
+            setTag(CHECKED);
         }
         else {
             setBackgroundResource(0);
-            setTag("Unchecked");
+            setTag(UNCHECKED);
         }
     }
 
     public boolean getToggledState(){
-        return getTag() == "Checked";
+        return getTag() == CHECKED;
     }
 
     public boolean flipToggledState(){
-        if(getTag() == "Unchecked") {
+        if(getTag() == UNCHECKED) {
             setBackgroundResource(R.drawable.splat);
-            setTag("Checked");
+            setTag(CHECKED);
         }
         else {
             setBackgroundResource(0);
-            setTag("Unchecked");
+            setTag(UNCHECKED);
         }
 
         return getToggledState();
