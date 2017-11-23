@@ -13,10 +13,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -177,13 +180,6 @@ public class FragmentPagerSupport extends FragmentActivity {
         btnTag.setBackgroundResource(0);
         btnTag.setId(id);
         btnTag.setTag("Unchecked");
-        btnTag.setOnClickListener(new View.OnClickListener(){
-
-            public void onClick(View v){
-                GearButton button = (GearButton) v;
-                button.flipToggledState();
-            }
-        });
 
         // Add the gear button to the given map
         gearMap.put(name, btnTag);
@@ -503,7 +499,7 @@ public class FragmentPagerSupport extends FragmentActivity {
          * @param layout            The layout in the fragment to add them to.
          * @return                  The passed map of gear items
          */
-        private TreeMap<String, GearButton> addAllGear(TreeMap<String, GearButton> mapOfGearItems, LinearLayout layout) {
+        private TreeMap<String, GearButton> addAllGear(TreeMap<String, GearButton> mapOfGearItems, final LinearLayout layout) {
             // the layout on which you are working
             layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -540,6 +536,27 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 // Add button to the layout
                 row.addView(btnTag);
+
+                final PopupWindow popUpWindow = new PopupWindow(getActivity());
+                btnTag.setOnClickListener(new View.OnClickListener(){
+
+                    public void onClick(View v){
+                        GearButton button = (GearButton) v;
+
+                        button.flipToggledState();
+                        popUpWindow.showAsDropDown(button);
+                    }
+                });
+
+                TextView tvMsg = new TextView(getContext());
+                tvMsg.setText("Hi this is pop up window...");
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout containerLayout = new LinearLayout(getContext());
+                containerLayout.setOrientation(LinearLayout.VERTICAL);
+                containerLayout.addView(tvMsg, layoutParams);
+                popUpWindow.setContentView(containerLayout);
             }
 
             // Add the final row to the layout if it was not already added
