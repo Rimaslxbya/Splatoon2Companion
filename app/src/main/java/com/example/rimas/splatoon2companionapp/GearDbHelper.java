@@ -21,7 +21,15 @@ public class GearDbHelper extends SQLiteOpenHelper {
             + GearContract.GearEntry.COLUMN_ACQUISITION_METHOD_ID + " INTEGER, "
             + GearContract.GearEntry.COLUMN_RARITY + " INTEGER, "
             + GearContract.GearEntry.COLUMN_AVAILABLE + " INTEGER, "
-            + GearContract.GearEntry.COLUMN_SELECTED + " INTEGER)";
+            + GearContract.GearEntry.COLUMN_SELECTED + " INTEGER, "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_TYPE_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_TYPES + "(" + GearContract.GearEntry._ID + "), "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_BRAND_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_BRANDS + "(" + GearContract.GearEntry._ID + "), "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_ABILITY_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_ABILITIES + "(" + GearContract.GearEntry._ID + "), "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_ACQUISITION_METHOD_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_ACQUISITION_METHODS + "(" + GearContract.GearEntry._ID + "))";
 
     private static final String SQL_CREATE_ABILITIES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_ABILITIES + " ("
@@ -38,20 +46,28 @@ public class GearDbHelper extends SQLiteOpenHelper {
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_BRAND + " TEXT, "
             + GearContract.GearEntry.COLUMN_COMMON_ABILITY + " INTEGER, "
-            + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " INTEGER)";
+            + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " INTEGER, "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_COMMON_ABILITY +") REFERENCES "
+            + GearContract.GearEntry.TABLE_ABILITIES + "(" + GearContract.GearEntry._ID + "), "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY +") REFERENCES "
+            + GearContract.GearEntry.TABLE_ABILITIES + "(" + GearContract.GearEntry._ID + "))";
 
     private static final String SQL_CREATE_GEAR_TO_ABILITIES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_GEAR_TO_ABILITIES + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_GEAR_ID + " INTEGER, "
-            + GearContract.GearEntry.COLUMN_ABILITY_ID + " INTEGER)";
+            + GearContract.GearEntry.COLUMN_ABILITY_ID + " INTEGER, "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_GEAR_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_GEAR + "(" + GearContract.GearEntry._ID + "), "
+            + "FOREIGN KEY ("+ GearContract.GearEntry.COLUMN_ABILITY_ID +") REFERENCES "
+            + GearContract.GearEntry.TABLE_ABILITIES + "(" + GearContract.GearEntry._ID + "))";
 
     private static final String SQL_CREATE_TYPES_TABLE = "CREATE TABLE IF NOT EXISTS "
             + GearContract.GearEntry.TABLE_TYPES + " ("
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_TYPE_NAME + " TEXT)";
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Splatoon2Companion.db";
 
     public GearDbHelper(Context context) {
@@ -60,12 +76,12 @@ public class GearDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQL_CREATE_GEAR_TABLE);
+        db.execSQL(SQL_CREATE_TYPES_TABLE);
         db.execSQL(SQL_CREATE_ABILITIES_TABLE);
         db.execSQL(SQL_CREATE_ACQUISITION_METHOD_TABLE);
         db.execSQL(SQL_CREATE_BRANDS_TABLE);
+        db.execSQL(SQL_CREATE_GEAR_TABLE);
         db.execSQL(SQL_CREATE_GEAR_TO_ABILITIES_TABLE);
-        db.execSQL(SQL_CREATE_TYPES_TABLE);
     }
 
     @Override
