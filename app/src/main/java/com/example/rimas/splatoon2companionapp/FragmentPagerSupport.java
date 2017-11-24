@@ -26,8 +26,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Created by Rimas on 9/19/2017.
@@ -41,11 +45,6 @@ public class FragmentPagerSupport extends FragmentActivity {
     static TreeMap<String, GearButton> headgearButtons; // Stores head gear buttons and their names
     static TreeMap<String, GearButton> clothingButtons; // Stores clothing buttons and their names
     static TreeMap<String, GearButton> shoeButtons;     // Stores shoes buttons and their names
-    static TreeMap<String, Integer> typesMap;           // Stores types and their row id's
-    TreeMap<String, Integer> abilitiesMap;              // Stores ability names and their row id's
-    TreeMap<String, Integer> acquisitionsTypeMap;       // Stores acquisition types and their row id's
-    TreeMap<String, Integer> brandsMap;                 // Stores brand names and their row id's
-    TreeMap<GearButton, Integer> gearToDbId;            // Stores gear buttons and their row id's
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +75,6 @@ public class FragmentPagerSupport extends FragmentActivity {
             populateTypes(db);
             populateGear(db);
         }
-        else{
-            populateTypesMap(db);
-        }
 
         // Close the database
         db.close();
@@ -95,11 +91,6 @@ public class FragmentPagerSupport extends FragmentActivity {
         headgearButtons = new TreeMap<>();
         clothingButtons = new TreeMap<>();
         shoeButtons = new TreeMap<>();
-        typesMap = new TreeMap<>();
-        abilitiesMap = new TreeMap<>();
-        acquisitionsTypeMap = new TreeMap<>();
-        brandsMap = new TreeMap<>();
-        gearToDbId = new TreeMap<>();
 
         int nextId = createGearSet(am, "Splatoon2Headgear.csv", "head", 0, headgearButtons);
         nextId = createGearSet(am, "Splatoon2Clothing.csv", "clothing", nextId, clothingButtons);
@@ -184,10 +175,6 @@ public class FragmentPagerSupport extends FragmentActivity {
 
         // Add the gear button to the given map
         gearMap.put(name, btnTag);
-
-        // Populate Maps
-        abilitiesMap.put(ability, 0);
-        acquisitionsTypeMap.put(acquisition, 0);
     }
 
     /**
@@ -196,18 +183,22 @@ public class FragmentPagerSupport extends FragmentActivity {
      * @param db    The database with the abilities table that needs to be populated
      */
     private void populateAbilitiesTable(SQLiteDatabase db){
-        Integer idCounter = 0;
+        ArrayList<GearButton> gearList = new ArrayList<>();
+        gearList.addAll(headgearButtons.values());
+        gearList.addAll(clothingButtons.values());
+        gearList.addAll(shoeButtons.values());
 
-        for(String ability : abilitiesMap.keySet()) {
+        TreeSet<String> abilitiesSet = new TreeSet<>();
+
+        for(GearButton gearItem : gearList)
+            abilitiesSet.add(gearItem.getAbility());
+
+        for(String ability : abilitiesSet) {
             ContentValues values = new ContentValues();
             values.put(GearContract.GearEntry.COLUMN_ABILITY, ability);
 
             // Insert into database
             db.insert(GearContract.GearEntry.TABLE_ABILITIES, null, values);
-
-            // Insert the ability's id into the table and increment the id counter
-            abilitiesMap.put(ability, idCounter);
-            idCounter++;
         }
     }
 
@@ -217,18 +208,22 @@ public class FragmentPagerSupport extends FragmentActivity {
      * @param db    The database with the acquisitions table that needs to be populated
      */
     private void populateAcquisitionsTable(SQLiteDatabase db){
-        Integer idCounter = 0;
+        ArrayList<GearButton> gearList = new ArrayList<>();
+        gearList.addAll(headgearButtons.values());
+        gearList.addAll(clothingButtons.values());
+        gearList.addAll(shoeButtons.values());
 
-        for(String acquisitionType : acquisitionsTypeMap.keySet()) {
+        TreeSet<String> acquisitionsSet = new TreeSet<>();
+
+        for(GearButton gearItem : gearList)
+            acquisitionsSet.add(gearItem.getAcquisitionMethod());
+
+        for(String acquisitionType : acquisitionsSet) {
             ContentValues values = new ContentValues();
             values.put(GearContract.GearEntry.COLUMN_ACQUISITION, acquisitionType);
 
             // Insert into database
             db.insert(GearContract.GearEntry.TABLE_ACQUISITION_METHODS, null, values);
-
-            // Insert the acquisition type's id into the table and increment the id counter
-            abilitiesMap.put(acquisitionType, idCounter);
-            idCounter++;
         }
     }
 
@@ -258,22 +253,35 @@ public class FragmentPagerSupport extends FragmentActivity {
             line = buffR.readLine();
 
             // Add brands and their biases
-            for(int id = 0; line != null; id++){
+            while(line != null){
                 StringTokenizer tokens = new StringTokenizer(line, ",");
 
                 String brand = tokens.nextToken();
                 String commonAbility = tokens.nextToken();
                 String uncommonAbility = tokens.nextToken();
 
+                Cursor commonCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                        GearContract.GearEntry.COLUMN_ABILITY + " = ?", new String[] {commonAbility});
+
+                Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                        GearContract.GearEntry.COLUMN_ABILITY + " = ?", new String[] {uncommonAbility});
+
+                commonCursor.moveToNext();
+                int commonId = commonCursor.getInt(0);
+
+                uncommonCursor.moveToNext();
+                int uncommonId = uncommonCursor.getInt(0);
+
+
                 ContentValues values = new ContentValues();
                 values.put(GearContract.GearEntry.COLUMN_BRAND, brand);
-                values.put(GearContract.GearEntry.COLUMN_COMMON_ABILITY, abilitiesMap.get(commonAbility));
-                values.put(GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY, abilitiesMap.get(uncommonAbility));
+                values.put(GearContract.GearEntry.COLUMN_COMMON_ABILITY, commonId);
+                values.put(GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY, uncommonId);
 
                 // Insert into database
                 db.insert(GearContract.GearEntry.TABLE_BRANDS, null, values);
-
-                brandsMap.put(brand, id);
 
                 line = buffR.readLine();
             }
@@ -303,32 +311,6 @@ public class FragmentPagerSupport extends FragmentActivity {
         values.clear();
         values.put(GearContract.GearEntry.COLUMN_TYPE_NAME, "shoes");
         db.insert(GearContract.GearEntry.TABLE_TYPES, null, values);
-
-        populateTypesMap(db);
-    }
-
-    private void populateTypesMap(SQLiteDatabase db){
-        // Requested columns
-        String[] projection = {
-                GearContract.GearEntry._ID,
-                GearContract.GearEntry.COLUMN_TYPE_NAME
-        };
-
-        // Get the query result
-        Cursor cursor = db.query(GearContract.GearEntry.TABLE_TYPES, projection, null,
-                null, null, null, null);
-
-        while(cursor.moveToNext()) {
-            // Get the gear type name and its row id in the table
-            String typeId = cursor.getString(0);
-            String typeName = cursor.getString(1);
-
-            // Insert the type and row id into the map
-            typesMap.put(typeName, Integer.parseInt(typeId));
-        }
-
-        // Free the cursor
-        cursor.close();
     }
 
     /**
@@ -361,19 +343,56 @@ public class FragmentPagerSupport extends FragmentActivity {
             int rarity = gButt.getRarity();
             boolean availability = gButt.getAvailability();
 
+            // Get the row IDs for Ability, Acquisition, Brand and Type values
+            int abilityRowId = 0;
+            Cursor abilityCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                    " FROM " + GearContract.GearEntry.TABLE_ABILITIES +
+                    " WHERE " + GearContract.GearEntry.COLUMN_ABILITY +
+                    " = ?", new String[] {ability} );
+            abilityCursor.moveToNext();
+            abilityRowId = abilityCursor.getInt(0);
+            abilityCursor.close();
+
+            int acquisitionMethodRowId = 0;
+            Cursor acquisitionCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                    " FROM " + GearContract.GearEntry.TABLE_ACQUISITION_METHODS +
+                    " WHERE " + GearContract.GearEntry.COLUMN_ACQUISITION +
+                    " = ?", new String[] {acquisitionType} );
+            acquisitionCursor.moveToNext();
+            acquisitionMethodRowId = acquisitionCursor.getInt(0);
+            acquisitionCursor.close();
+
+            int brandRowId = 0;
+            Cursor brandCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                    " FROM " + GearContract.GearEntry.TABLE_BRANDS +
+                    " WHERE " + GearContract.GearEntry.COLUMN_BRAND +
+                    " = ?", new String[] {brand} );
+            brandCursor.moveToNext();
+            brandRowId = brandCursor.getInt(0);
+            brandCursor.close();
+
+            int typeRowId = 0;
+            Cursor typeCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                    " FROM " + GearContract.GearEntry.TABLE_TYPES +
+                    " WHERE " + GearContract.GearEntry.COLUMN_TYPE_NAME +
+                    " = ?", new String[] {type} );
+            typeCursor.moveToNext();
+            typeRowId = typeCursor.getInt(0);
+            typeCursor.close();
+
+            // Add all values to a content values object
             ContentValues values = new ContentValues();
             values.put(GearContract.GearEntry.COLUMN_GNAME, name);
-            values.put(GearContract.GearEntry.COLUMN_TYPE_ID, typesMap.get(type));
-            values.put(GearContract.GearEntry.COLUMN_BRAND_ID, brandsMap.get(brand));
-            values.put(GearContract.GearEntry.COLUMN_ABILITY_ID, abilitiesMap.get(ability));
-            values.put(GearContract.GearEntry.COLUMN_ACQUISITION_METHOD_ID, acquisitionsTypeMap.get(acquisitionType));
+            values.put(GearContract.GearEntry.COLUMN_TYPE_ID, typeRowId);
+            values.put(GearContract.GearEntry.COLUMN_BRAND_ID, brandRowId);
+            values.put(GearContract.GearEntry.COLUMN_ABILITY_ID, abilityRowId);
+            values.put(GearContract.GearEntry.COLUMN_ACQUISITION_METHOD_ID, acquisitionMethodRowId);
             values.put(GearContract.GearEntry.COLUMN_RARITY, rarity);
             values.put(GearContract.GearEntry.COLUMN_AVAILABLE, availability);
             values.put(GearContract.GearEntry.COLUMN_SELECTED, false);
 
             // Insert into database
             db.insert(GearContract.GearEntry.TABLE_GEAR, null, values);
-            gearToDbId.put(gButt, id);
             id++;
         }
 
@@ -606,6 +625,15 @@ public class FragmentPagerSupport extends FragmentActivity {
             GearDbHelper mDbHelper = new GearDbHelper(getContext());
             SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
+            // Grab the row ID for the type prefix
+            Cursor typeCursor = db.rawQuery("SELECT " + GearContract.GearEntry._ID +
+                    " FROM " + GearContract.GearEntry.TABLE_TYPES +
+                    " WHERE " + GearContract.GearEntry.COLUMN_TYPE_NAME +
+                    " = ?", new String[] {prefix} );
+            typeCursor.moveToNext();
+            int typeRowId = typeCursor.getInt(0);
+            typeCursor.close();
+
             // Requested columns
             String[] projection = {
                     GearContract.GearEntry.COLUMN_GNAME,
@@ -616,7 +644,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             String selection = GearContract.GearEntry.COLUMN_TYPE_ID + " = ?";
 
             // Argument for WHERE statement
-            String[] selectionArgs = { Integer.toString(typesMap.get(prefix)) };
+            String[] selectionArgs = { Integer.toString(typeRowId) };
 
             // Get the query result
             Cursor cursor = db.query(GearContract.GearEntry.TABLE_GEAR, projection, selection,
@@ -638,6 +666,8 @@ public class FragmentPagerSupport extends FragmentActivity {
 
             // Free the cursor
             cursor.close();
+
+            db.close();
         }
 
         private void debugReadDatabase(SQLiteDatabase db){
