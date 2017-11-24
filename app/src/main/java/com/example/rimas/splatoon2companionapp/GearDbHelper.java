@@ -51,14 +51,6 @@ public class GearDbHelper extends SQLiteOpenHelper {
             + GearContract.GearEntry._ID + " INTEGER PRIMARY KEY, "
             + GearContract.GearEntry.COLUMN_TYPE_NAME + " TEXT)";
 
-    private static final String SQL_WIPE_DATABASE_CLEAN =
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_GEAR + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_ACQUISITION_METHODS + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_BRANDS + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_GEAR_TO_ABILITIES + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_TYPES + "; " +
-            "DROP TABLE IF EXISTS " + GearContract.GearEntry.TABLE_ABILITIES + ";";
-
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Splatoon2Companion.db";
 
@@ -83,7 +75,12 @@ public class GearDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_WIPE_DATABASE_CLEAN);
+        db.delete(GearContract.GearEntry.TABLE_GEAR, null, null);
+        db.delete(GearContract.GearEntry.TABLE_ACQUISITION_METHODS, null, null);
+        db.delete(GearContract.GearEntry.TABLE_BRANDS, null, null);
+        db.delete(GearContract.GearEntry.TABLE_GEAR_TO_ABILITIES, null, null);
+        db.delete(GearContract.GearEntry.TABLE_TYPES, null, null);
+        db.delete(GearContract.GearEntry.TABLE_ABILITIES, null, null);
         onCreate(db);
     }
 
