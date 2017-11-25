@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -584,9 +586,14 @@ public class FragmentPagerSupport extends FragmentActivity {
                             popUpWindow.dismiss();
                     }
                 });
+                AssetManager am = getContext().getApplicationContext().getAssets();
+
+                Typeface splatFont = Typeface.createFromAsset(am,
+                        String.format(Locale.US, "fonts/%s", "Splatfont2.ttf"));
 
                 TextView brandLabel = new TextView(getContext());
                 brandLabel.setText(btnTag.getBrand());
+                brandLabel.setTypeface(splatFont);
 
                 String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
                 ImageButton brandButton = new ImageButton(getContext());
@@ -622,6 +629,7 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 TextView commonLabel = new TextView(getContext());
                 commonLabel.setText(commonAbility);
+                commonLabel.setTypeface(splatFont);
 
                 Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
                         " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
@@ -643,9 +651,9 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 TextView uncommonLabel = new TextView(getContext());
                 uncommonLabel.setText(uncommonAbility);
+                uncommonLabel.setTypeface(splatFont);
 
                 final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
-                //brandBiasPopup.setOutsideTouchable(true);
 
                 brandButton.setOnClickListener(new View.OnClickListener(){
 
