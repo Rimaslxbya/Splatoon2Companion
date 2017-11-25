@@ -28,7 +28,7 @@ public class PopupDialog extends Dialog{
         float density = mContext.getResources().getDisplayMetrics().density;
         WindowManager.LayoutParams wmlp = getWindow().getAttributes();
         int[] location = new int[2];
-        v.getLocationInWindow(location);
+        v.getLocationOnScreen(location);
         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
         wmlp.x = location[0]+(int)(v.getWidth()/density);
         wmlp.y = location[1]+(int)(v.getHeight()/density);
