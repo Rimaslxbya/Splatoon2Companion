@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -526,6 +527,10 @@ public class FragmentPagerSupport extends FragmentActivity {
             // The position of the button in a row
             int rowPosition = 0;
 
+            // Open the database
+            GearDbHelper mDbHelper = new GearDbHelper(getActivity().getApplicationContext());
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
             // Stores the current row
             LinearLayout row = new LinearLayout(this.getContext());
             row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -575,21 +580,100 @@ public class FragmentPagerSupport extends FragmentActivity {
                     }
                 });
 
-                ImageView brandImg = new ImageView(getContext());
-                int brandDrawable = getResources().getIdentifier(btnTag.getBrand().toLowerCase(), "drawable", getActivity().getPackageName());
-                brandImg.setImageResource(brandDrawable);
+                TextView brandLabel = new TextView(getContext());
+                brandLabel.setText(btnTag.getBrand());
+
+                String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
+                ImageButton brandButton = new ImageButton(getContext());
+                int brandDrawable = getResources().getIdentifier(brandResourceStr, "drawable", getActivity().getPackageName());
+                brandButton.setImageResource(brandDrawable);
+
+                Cursor biasCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_COMMON_ABILITY +
+                        ", " + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " FROM " +
+                        GearContract.GearEntry.TABLE_BRANDS + " WHERE " +
+                        GearContract.GearEntry.COLUMN_BRAND + " = ?",new String[] {btnTag.getBrand()});
+
+                biasCursor.moveToNext();
+                int commonRowId = biasCursor.getInt(0);
+                int uncommonRowId = biasCursor.getInt(1);
+
+                Cursor commonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
+                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                        GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(commonRowId)});
+
+                commonCursor.moveToNext();
+                String commonAbility = commonCursor.getString(0);
+                String commonResourceStr = commonAbility.toLowerCase().replace(' ', '_');
+                int commonDrawable = getResources().getIdentifier(commonResourceStr, "drawable", getActivity().getPackageName());
+                ImageView commonImg = new ImageView(getContext());
+                commonImg.setImageResource(commonDrawable);
+                commonCursor.close();
+
+                TextView commonLabel = new TextView(getContext());
+                commonLabel.setText(commonAbility);
+
+                Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
+                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                        GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(uncommonRowId)});
+
+                uncommonCursor.moveToNext();
+                String uncommonAbility = uncommonCursor.getString(0);
+                String uncommonResourceStr = uncommonAbility.toLowerCase().replace(' ', '_');
+                int uncommonDrawable = getResources().getIdentifier(uncommonResourceStr, "drawable", getActivity().getPackageName());
+                ImageView uncommonImg = new ImageView(getContext());
+                uncommonImg.setImageResource(uncommonDrawable);
+                uncommonCursor.close();
+
+                TextView uncommonLabel = new TextView(getContext());
+                uncommonLabel.setText(uncommonAbility);
+
+                final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
+                //brandBiasPopup.setOutsideTouchable(true);
+
+                brandButton.setOnClickListener(new View.OnClickListener(){
+
+                    public void onClick(View v){
+                        if(brandBiasPopup.isShowing())
+                            brandBiasPopup.dismiss();
+                        else
+                            brandBiasPopup.showAsDropdown(v);
+                    }
+                });
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout brandLayout = new LinearLayout(getContext());
+                brandLayout.setOrientation(LinearLayout.HORIZONTAL);
+                brandLayout.addView(brandButton, layoutParams);
+                brandLayout.addView(brandLabel, layoutParams);
+
                 LinearLayout containerLayout = new LinearLayout(getContext());
                 containerLayout.setOrientation(LinearLayout.VERTICAL);
-                containerLayout.addView(brandImg, layoutParams);
+                containerLayout.addView(brandLayout, layoutParams);
                 popUpWindow.setContentView(containerLayout);
+
+                LinearLayout commonLayout = new LinearLayout(getContext());
+                commonLayout.setOrientation(LinearLayout.HORIZONTAL);
+                commonLayout.addView(commonImg, layoutParams);
+                commonLayout.addView(commonLabel, layoutParams);
+
+                LinearLayout uncommonLayout = new LinearLayout(getContext());
+                uncommonLayout.setOrientation(LinearLayout.HORIZONTAL);
+                uncommonLayout.addView(uncommonImg, layoutParams);
+                uncommonLayout.addView(uncommonLabel, layoutParams);
+
+                LinearLayout biasContainerLayout = new LinearLayout(getContext());
+                biasContainerLayout.setOrientation(LinearLayout.VERTICAL);
+                biasContainerLayout.addView(commonLayout, layoutParams);
+                biasContainerLayout.addView(uncommonLayout, layoutParams);
+                brandBiasPopup.setContentView(biasContainerLayout);
             }
 
             // Add the final row to the layout if it was not already added
             if(rowPosition != 0)
                 layout.addView(row);
+
+            db.close();
 
             return mapOfGearItems;
 
