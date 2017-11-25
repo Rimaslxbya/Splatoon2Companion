@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.constraint.solver.SolverVariable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -71,7 +72,8 @@ public class FragmentPagerSupport extends FragmentActivity {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // If the database is empty, create and populate the database
-        if(!mDbHelper.doesTableExist(db, GearContract.GearEntry.TABLE_GEAR) || mDbHelper.isTableEmpty(db, GearContract.GearEntry.TABLE_GEAR)) {
+        if(!mDbHelper.doesTableExist(db, GearContract.GearEntry.TABLE_GEAR)
+                || mDbHelper.isTableEmpty(db, GearContract.GearEntry.TABLE_GEAR)) {
             mDbHelper.onCreate(db);
             db.close();
             db = mDbHelper.getWritableDatabase();
@@ -88,6 +90,29 @@ public class FragmentPagerSupport extends FragmentActivity {
         // Set up tab layout
         TabLayout tabby = findViewById(R.id.tab_layout);
         tabby.setupWithViewPager(mPager);
+
+
+        AssetManager am = getApplicationContext().getAssets();
+
+        Typeface splatFont = Typeface.createFromAsset(am,
+                String.format(Locale.US, "fonts/%s", "Splatfont2.ttf"));
+
+        // Change font on tabs
+        int tabbyChildCount = tabby.getChildCount();
+        for(int k = 0; k < tabbyChildCount; k++) {
+            ViewGroup vg = (ViewGroup) tabby.getChildAt(0);
+            int tabsCount = vg.getChildCount();
+            for (int j = 0; j < tabsCount; j++) {
+                ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+                int tabChildCount = vgTab.getChildCount();
+                for (int i = 0; i < tabChildCount; i++) {
+                    View tabViewChild = vgTab.getChildAt(i);
+                    if (tabViewChild instanceof TextView) {
+                        ((TextView) tabViewChild).setTypeface(splatFont, Typeface.NORMAL);
+                    }
+                }
+            }
+        }
     }
 
     private void createGear(){
