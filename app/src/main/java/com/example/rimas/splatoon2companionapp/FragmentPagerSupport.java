@@ -656,9 +656,11 @@ public class FragmentPagerSupport extends FragmentActivity {
                 commonLabel.setText(commonAbility);
                 commonLabel.setTypeface(splatFont);
 
+                float plusMinusSize = 24;
                 TextView plusLabel = new TextView(getContext());
                 plusLabel.setText("+");
                 plusLabel.setTypeface(splatFont);
+                plusLabel.setTextSize(plusMinusSize);
 
                 Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
                         " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
@@ -685,6 +687,7 @@ public class FragmentPagerSupport extends FragmentActivity {
                 TextView minusLabel = new TextView(getContext());
                 minusLabel.setText("-");
                 minusLabel.setTypeface(splatFont);
+                minusLabel.setTextSize(plusMinusSize);
 
                 final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
 
