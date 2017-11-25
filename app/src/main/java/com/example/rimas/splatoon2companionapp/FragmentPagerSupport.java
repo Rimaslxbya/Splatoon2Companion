@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -474,6 +475,8 @@ public class FragmentPagerSupport extends FragmentActivity {
         TreeMap<String, GearButton> gearButtons;
 
         private final float plusMinusSize = 24;
+        private final String plusColor = "#1A8934";
+        private final String minusColor = "#A02B37";
 
         /**
          * Create a new instance of CountingFragment, providing "num"
@@ -657,11 +660,13 @@ public class FragmentPagerSupport extends FragmentActivity {
                 TextView commonLabel = new TextView(getContext());
                 commonLabel.setText(commonAbility);
                 commonLabel.setTypeface(splatFont);
+                commonLabel.setTextColor(Color.parseColor(plusColor));
 
                 TextView plusLabel = new TextView(getContext());
                 plusLabel.setText("+");
                 plusLabel.setTypeface(splatFont);
                 plusLabel.setTextSize(plusMinusSize);
+                plusLabel.setTextColor(Color.parseColor(plusColor));
 
                 Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
                         " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
@@ -684,11 +689,13 @@ public class FragmentPagerSupport extends FragmentActivity {
                 TextView uncommonLabel = new TextView(getContext());
                 uncommonLabel.setText(uncommonAbility);
                 uncommonLabel.setTypeface(splatFont);
+                uncommonLabel.setTextColor(Color.parseColor(minusColor));
 
                 TextView minusLabel = new TextView(getContext());
                 minusLabel.setText("-");
                 minusLabel.setTypeface(splatFont);
                 minusLabel.setTextSize(plusMinusSize);
+                minusLabel.setTextColor(Color.parseColor(minusColor));
 
                 final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
 
