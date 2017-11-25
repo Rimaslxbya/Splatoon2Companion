@@ -5,7 +5,10 @@ import android.content.ContentValues;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -609,9 +612,12 @@ public class FragmentPagerSupport extends FragmentActivity {
                 commonResourceStr = commonResourceStr.replace("(", "").replace(")","");
                 if(commonResourceStr.equals("---"))
                     commonResourceStr = "random";
-                int commonDrawable = getResources().getIdentifier(commonResourceStr, "drawable", getActivity().getPackageName());
+                int commonResId = getResources().getIdentifier(commonResourceStr, "drawable", getActivity().getPackageName());
                 ImageView commonImg = new ImageView(getContext());
-                commonImg.setImageResource(commonDrawable);
+                commonImg.setImageResource(commonResId);
+                Bitmap commonBitmap = Macros.resize(commonImg.getDrawable(), 100, 100);
+                Drawable commonDrawable = new BitmapDrawable(getResources(), commonBitmap);
+                commonImg.setImageDrawable(commonDrawable);
                 commonCursor.close();
 
                 TextView commonLabel = new TextView(getContext());
@@ -627,9 +633,12 @@ public class FragmentPagerSupport extends FragmentActivity {
                 uncommonResourceStr = uncommonResourceStr.replace("(", "").replace(")","");
                 if(uncommonResourceStr.equals("---"))
                     uncommonResourceStr = "random";
-                int uncommonDrawable = getResources().getIdentifier(uncommonResourceStr, "drawable", getActivity().getPackageName());
+                int uncommonResId = getResources().getIdentifier(uncommonResourceStr, "drawable", getActivity().getPackageName());
                 ImageView uncommonImg = new ImageView(getContext());
-                uncommonImg.setImageResource(uncommonDrawable);
+                uncommonImg.setImageResource(uncommonResId);
+                Bitmap uncommonBitmap = Macros.resize(uncommonImg.getDrawable(), 100, 100);
+                Drawable uncommonDrawable = new BitmapDrawable(getResources(), uncommonBitmap);
+                uncommonImg.setImageDrawable(uncommonDrawable);
                 uncommonCursor.close();
 
                 TextView uncommonLabel = new TextView(getContext());
