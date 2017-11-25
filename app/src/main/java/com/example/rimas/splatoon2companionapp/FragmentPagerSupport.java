@@ -607,6 +607,8 @@ public class FragmentPagerSupport extends FragmentActivity {
                 String commonAbility = commonCursor.getString(0);
                 String commonResourceStr = commonAbility.toLowerCase().replace(' ', '_');
                 commonResourceStr = commonResourceStr.replace("(", "").replace(")","");
+                if(commonResourceStr.equals("---"))
+                    commonResourceStr = "random";
                 int commonDrawable = getResources().getIdentifier(commonResourceStr, "drawable", getActivity().getPackageName());
                 ImageView commonImg = new ImageView(getContext());
                 commonImg.setImageResource(commonDrawable);
@@ -623,6 +625,8 @@ public class FragmentPagerSupport extends FragmentActivity {
                 String uncommonAbility = uncommonCursor.getString(0);
                 String uncommonResourceStr = uncommonAbility.toLowerCase().replace(' ', '_');
                 uncommonResourceStr = uncommonResourceStr.replace("(", "").replace(")","");
+                if(uncommonResourceStr.equals("---"))
+                    uncommonResourceStr = "random";
                 int uncommonDrawable = getResources().getIdentifier(uncommonResourceStr, "drawable", getActivity().getPackageName());
                 ImageView uncommonImg = new ImageView(getContext());
                 uncommonImg.setImageResource(uncommonDrawable);
