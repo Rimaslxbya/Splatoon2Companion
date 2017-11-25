@@ -711,6 +711,7 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
+                layoutParams.gravity = Gravity.CENTER_VERTICAL;
                 LinearLayout brandLayout = new LinearLayout(getContext());
                 brandLayout.setOrientation(LinearLayout.HORIZONTAL);
                 brandLayout.addView(brandButton, layoutParams);
