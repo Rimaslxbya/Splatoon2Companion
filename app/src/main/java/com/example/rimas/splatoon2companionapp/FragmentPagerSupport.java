@@ -656,6 +656,10 @@ public class FragmentPagerSupport extends FragmentActivity {
                 commonLabel.setText(commonAbility);
                 commonLabel.setTypeface(splatFont);
 
+                TextView plusLabel = new TextView(getContext());
+                plusLabel.setText("+");
+                plusLabel.setTypeface(splatFont);
+
                 Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
                         " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
                         GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(uncommonRowId)});
@@ -677,6 +681,10 @@ public class FragmentPagerSupport extends FragmentActivity {
                 TextView uncommonLabel = new TextView(getContext());
                 uncommonLabel.setText(uncommonAbility);
                 uncommonLabel.setTypeface(splatFont);
+
+                TextView minusLabel = new TextView(getContext());
+                minusLabel.setText("-");
+                minusLabel.setTypeface(splatFont);
 
                 final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
 
@@ -704,11 +712,13 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 LinearLayout commonLayout = new LinearLayout(getContext());
                 commonLayout.setOrientation(LinearLayout.HORIZONTAL);
+                commonLayout.addView(plusLabel, layoutParams);
                 commonLayout.addView(commonImg, layoutParams);
                 commonLayout.addView(commonLabel, layoutParams);
 
                 LinearLayout uncommonLayout = new LinearLayout(getContext());
                 uncommonLayout.setOrientation(LinearLayout.HORIZONTAL);
+                uncommonLayout.addView(minusLabel, layoutParams);
                 uncommonLayout.addView(uncommonImg, layoutParams);
                 uncommonLayout.addView(uncommonLabel, layoutParams);
 
