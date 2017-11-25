@@ -473,6 +473,8 @@ public class FragmentPagerSupport extends FragmentActivity {
         int mNum;
         TreeMap<String, GearButton> gearButtons;
 
+        private final float plusMinusSize = 24;
+
         /**
          * Create a new instance of CountingFragment, providing "num"
          * as an argument.
@@ -656,7 +658,6 @@ public class FragmentPagerSupport extends FragmentActivity {
                 commonLabel.setText(commonAbility);
                 commonLabel.setTypeface(splatFont);
 
-                float plusMinusSize = 24;
                 TextView plusLabel = new TextView(getContext());
                 plusLabel.setText("+");
                 plusLabel.setTypeface(splatFont);
