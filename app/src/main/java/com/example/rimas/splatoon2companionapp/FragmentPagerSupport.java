@@ -616,25 +616,45 @@ public class FragmentPagerSupport extends FragmentActivity {
                             popUpWindow.dismiss();
                     }
                 });
-                AssetManager am = getContext().getApplicationContext().getAssets();
 
+                // Get the custom font
+                AssetManager am = getContext().getApplicationContext().getAssets();
                 Typeface splatFont = Typeface.createFromAsset(am,
                         String.format(Locale.US, "fonts/%s", "Splatfont2.ttf"));
 
+                // Create label for brand
                 TextView brandLabel = new TextView(getContext());
                 brandLabel.setText(btnTag.getBrand());
                 brandLabel.setTypeface(splatFont);
 
+                // Get the brand's logo
                 String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
                 ImageButton brandButton = new ImageButton(getContext());
                 int brandDrawable = getResources().getIdentifier(brandResourceStr, "drawable", getActivity().getPackageName());
                 brandButton.setImageResource(brandDrawable);
 
+                // Create label for main ability
+                TextView mainAbilityLabel = new TextView(getContext());
+                mainAbilityLabel.setText(btnTag.getAbility());
+                mainAbilityLabel.setTypeface(splatFont);
+
+                // Get the main ability's icon
+                String mainAbilityResourceStr = btnTag.getAbility().toLowerCase().replace(' ','_');
+                mainAbilityResourceStr = mainAbilityResourceStr.replace("(", "").replace(")","");
+                if(mainAbilityResourceStr.equals("---"))
+                    mainAbilityResourceStr = "random";
+                ImageView mainAbilityImg = new ImageView(getContext());
+                int mainAbilityResId = getResources().getIdentifier(mainAbilityResourceStr, "drawable", getActivity().getPackageName());
+                mainAbilityImg.setImageResource(mainAbilityResId);
+                Bitmap mainAbilityBitmap = Macros.resize(mainAbilityImg.getDrawable(), 100, 100);
+                Drawable mainAbilityDrawable = new BitmapDrawable(getResources(), mainAbilityBitmap);
+                mainAbilityImg.setImageDrawable(mainAbilityDrawable);
+
+                // Get the brand's common and uncommon abilities
                 Cursor biasCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_COMMON_ABILITY +
                         ", " + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " FROM " +
                         GearContract.GearEntry.TABLE_BRANDS + " WHERE " +
                         GearContract.GearEntry.COLUMN_BRAND + " = ?",new String[] {btnTag.getBrand()});
-
                 biasCursor.moveToNext();
                 int commonRowId = biasCursor.getInt(0);
                 int uncommonRowId = biasCursor.getInt(1);
@@ -717,9 +737,15 @@ public class FragmentPagerSupport extends FragmentActivity {
                 brandLayout.addView(brandButton, layoutParams);
                 brandLayout.addView(brandLabel, layoutParams);
 
+                LinearLayout mainAbilityLayout = new LinearLayout(getContext());
+                mainAbilityLayout.setOrientation(LinearLayout.HORIZONTAL);
+                mainAbilityLayout.addView(mainAbilityImg, layoutParams);
+                mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
+
                 LinearLayout containerLayout = new LinearLayout(getContext());
                 containerLayout.setOrientation(LinearLayout.VERTICAL);
                 containerLayout.addView(brandLayout, layoutParams);
+                containerLayout.addView(mainAbilityLayout, layoutParams);
                 popUpWindow.setContentView(containerLayout);
 
                 LinearLayout commonLayout = new LinearLayout(getContext());
