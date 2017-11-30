@@ -623,9 +623,7 @@ public class FragmentPagerSupport extends FragmentActivity {
                         String.format(Locale.US, "fonts/%s", "Splatfont2.ttf"));
 
                 // Create label for brand
-                TextView brandLabel = new TextView(getContext());
-                brandLabel.setText(btnTag.getBrand());
-                brandLabel.setTypeface(splatFont);
+                TextView brandLabel = Macros.getSplatoonTextview(btnTag.getBrand(), getContext());
 
                 // Get the brand's logo
                 String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
@@ -634,9 +632,7 @@ public class FragmentPagerSupport extends FragmentActivity {
                 brandButton.setImageResource(brandDrawable);
 
                 // Create label for main ability
-                TextView mainAbilityLabel = new TextView(getContext());
-                mainAbilityLabel.setText(btnTag.getAbility());
-                mainAbilityLabel.setTypeface(splatFont);
+                TextView mainAbilityLabel = Macros.getSplatoonTextview(btnTag.getAbility(), getContext());
 
                 // Get the main ability's icon
                 String mainAbilityResourceStr = btnTag.getAbility().toLowerCase().replace(' ','_');
@@ -677,14 +673,10 @@ public class FragmentPagerSupport extends FragmentActivity {
                 commonImg.setImageDrawable(commonDrawable);
                 commonCursor.close();
 
-                TextView commonLabel = new TextView(getContext());
-                commonLabel.setText(commonAbility);
-                commonLabel.setTypeface(splatFont);
+                TextView commonLabel = Macros.getSplatoonTextview(commonAbility, getContext());
                 commonLabel.setTextColor(Color.parseColor(plusColor));
 
-                TextView plusLabel = new TextView(getContext());
-                plusLabel.setText("+");
-                plusLabel.setTypeface(splatFont);
+                TextView plusLabel = Macros.getSplatoonTextview("+",getContext());
                 plusLabel.setTextSize(plusMinusSize);
                 plusLabel.setTextColor(Color.parseColor(plusColor));
 
@@ -706,14 +698,10 @@ public class FragmentPagerSupport extends FragmentActivity {
                 uncommonImg.setImageDrawable(uncommonDrawable);
                 uncommonCursor.close();
 
-                TextView uncommonLabel = new TextView(getContext());
-                uncommonLabel.setText(uncommonAbility);
-                uncommonLabel.setTypeface(splatFont);
+                TextView uncommonLabel = Macros.getSplatoonTextview(uncommonAbility, getContext());
                 uncommonLabel.setTextColor(Color.parseColor(minusColor));
 
-                TextView minusLabel = new TextView(getContext());
-                minusLabel.setText("-");
-                minusLabel.setTypeface(splatFont);
+                TextView minusLabel = Macros.getSplatoonTextview("-", getContext());
                 minusLabel.setTextSize(plusMinusSize);
                 minusLabel.setTextColor(Color.parseColor(minusColor));
 
