@@ -28,7 +28,7 @@ public class Macros {
      * @param context   The context to pass to the constructor of the textview
      * @return          The new textview
      */
-    public static TextView getSplatoonTextview(String text, Context context){
+    public static TextView createSplatoonTextView(String text, Context context){
 
         // Get the custom font
         AssetManager am = context.getApplicationContext().getAssets();

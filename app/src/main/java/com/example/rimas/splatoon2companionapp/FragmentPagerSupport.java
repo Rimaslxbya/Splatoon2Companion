@@ -12,7 +12,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.constraint.solver.SolverVariable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -34,9 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -740,7 +737,7 @@ public class FragmentPagerSupport extends FragmentActivity {
          */
         private void setupGearPopup(PopupWindow gearPopup, GearButton btnTag, SQLiteDatabase db){
             // Create label for brand
-            TextView brandLabel = Macros.getSplatoonTextview(btnTag.getBrand(), getContext());
+            TextView brandLabel = Macros.createSplatoonTextView(btnTag.getBrand(), getContext());
 
             // Get the brand's logo
             String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
@@ -749,7 +746,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             brandButton.setImageResource(brandDrawable);
 
             // Create label for main ability
-            TextView mainAbilityLabel = Macros.getSplatoonTextview(btnTag.getAbility(), getContext());
+            TextView mainAbilityLabel = Macros.createSplatoonTextView(btnTag.getAbility(), getContext());
 
             // Get the main ability's icon
             ImageView mainAbilityImg = createImageFromName(btnTag.getAbility(), true);
@@ -821,10 +818,10 @@ public class FragmentPagerSupport extends FragmentActivity {
             commonCursor.close();
 
             // Create the labels for the common ability
-            TextView commonLabel = Macros.getSplatoonTextview(commonAbility, getContext());
+            TextView commonLabel = Macros.createSplatoonTextView(commonAbility, getContext());
             commonLabel.setTextColor(Color.parseColor(plusColor));
 
-            TextView plusLabel = Macros.getSplatoonTextview("+",getContext());
+            TextView plusLabel = Macros.createSplatoonTextView("+",getContext());
             plusLabel.setTextSize(plusMinusSize);
             plusLabel.setTextColor(Color.parseColor(plusColor));
 
@@ -838,10 +835,10 @@ public class FragmentPagerSupport extends FragmentActivity {
             uncommonCursor.close();
 
             // Create the labels for the uncommon ability
-            TextView uncommonLabel = Macros.getSplatoonTextview(uncommonAbility, getContext());
+            TextView uncommonLabel = Macros.createSplatoonTextView(uncommonAbility, getContext());
             uncommonLabel.setTextColor(Color.parseColor(minusColor));
 
-            TextView minusLabel = Macros.getSplatoonTextview("-", getContext());
+            TextView minusLabel = Macros.createSplatoonTextView("-", getContext());
             minusLabel.setTextSize(plusMinusSize);
             minusLabel.setTextColor(Color.parseColor(minusColor));
 
