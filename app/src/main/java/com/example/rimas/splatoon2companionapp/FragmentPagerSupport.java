@@ -599,8 +599,8 @@ public class FragmentPagerSupport extends FragmentActivity {
                 // Add button to the layout
                 row.addView(btnTag);
 
-                final PopupWindow popUpWindow = new PopupWindow(getActivity());
-                popUpWindow.setOutsideTouchable(true);
+                final PopupWindow gearPopup = new PopupWindow(getActivity());
+                gearPopup.setOutsideTouchable(true);
                 btnTag.setOnClickListener(new View.OnClickListener(){
 
                     public void onClick(View v){
@@ -611,148 +611,13 @@ public class FragmentPagerSupport extends FragmentActivity {
                         boolean toggled = button.getToggledState();
 
                         if(toggled)
-                            popUpWindow.showAsDropDown(button);
+                            gearPopup.showAsDropDown(button);
                         else
-                            popUpWindow.dismiss();
+                            gearPopup.dismiss();
                     }
                 });
 
-                // Get the custom font
-                AssetManager am = getContext().getApplicationContext().getAssets();
-                Typeface splatFont = Typeface.createFromAsset(am,
-                        String.format(Locale.US, "fonts/%s", "Splatfont2.ttf"));
-
-                // Create label for brand
-                TextView brandLabel = Macros.getSplatoonTextview(btnTag.getBrand(), getContext());
-
-                // Get the brand's logo
-                String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
-                ImageButton brandButton = new ImageButton(getContext());
-                int brandDrawable = getResources().getIdentifier(brandResourceStr, "drawable", getActivity().getPackageName());
-                brandButton.setImageResource(brandDrawable);
-
-                // Create label for main ability
-                TextView mainAbilityLabel = Macros.getSplatoonTextview(btnTag.getAbility(), getContext());
-
-                // Get the main ability's icon
-                String mainAbilityResourceStr = btnTag.getAbility().toLowerCase().replace(' ','_');
-                mainAbilityResourceStr = mainAbilityResourceStr.replace("(", "").replace(")","");
-                if(mainAbilityResourceStr.equals("---"))
-                    mainAbilityResourceStr = "random";
-                ImageView mainAbilityImg = new ImageView(getContext());
-                int mainAbilityResId = getResources().getIdentifier(mainAbilityResourceStr, "drawable", getActivity().getPackageName());
-                mainAbilityImg.setImageResource(mainAbilityResId);
-                Bitmap mainAbilityBitmap = Macros.resize(mainAbilityImg.getDrawable(), 100, 100);
-                Drawable mainAbilityDrawable = new BitmapDrawable(getResources(), mainAbilityBitmap);
-                mainAbilityImg.setImageDrawable(mainAbilityDrawable);
-
-                // Get the brand's common and uncommon abilities
-                Cursor biasCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_COMMON_ABILITY +
-                        ", " + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " FROM " +
-                        GearContract.GearEntry.TABLE_BRANDS + " WHERE " +
-                        GearContract.GearEntry.COLUMN_BRAND + " = ?",new String[] {btnTag.getBrand()});
-                biasCursor.moveToNext();
-                int commonRowId = biasCursor.getInt(0);
-                int uncommonRowId = biasCursor.getInt(1);
-
-                Cursor commonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
-                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
-                        GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(commonRowId)});
-
-                commonCursor.moveToNext();
-                String commonAbility = commonCursor.getString(0);
-                String commonResourceStr = commonAbility.toLowerCase().replace(' ', '_');
-                commonResourceStr = commonResourceStr.replace("(", "").replace(")","");
-                if(commonResourceStr.equals("---"))
-                    commonResourceStr = "random";
-                int commonResId = getResources().getIdentifier(commonResourceStr, "drawable", getActivity().getPackageName());
-                ImageView commonImg = new ImageView(getContext());
-                commonImg.setImageResource(commonResId);
-                Bitmap commonBitmap = Macros.resize(commonImg.getDrawable(), 100, 100);
-                Drawable commonDrawable = new BitmapDrawable(getResources(), commonBitmap);
-                commonImg.setImageDrawable(commonDrawable);
-                commonCursor.close();
-
-                TextView commonLabel = Macros.getSplatoonTextview(commonAbility, getContext());
-                commonLabel.setTextColor(Color.parseColor(plusColor));
-
-                TextView plusLabel = Macros.getSplatoonTextview("+",getContext());
-                plusLabel.setTextSize(plusMinusSize);
-                plusLabel.setTextColor(Color.parseColor(plusColor));
-
-                Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
-                        " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
-                        GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(uncommonRowId)});
-
-                uncommonCursor.moveToNext();
-                String uncommonAbility = uncommonCursor.getString(0);
-                String uncommonResourceStr = uncommonAbility.toLowerCase().replace(' ', '_');
-                uncommonResourceStr = uncommonResourceStr.replace("(", "").replace(")","");
-                if(uncommonResourceStr.equals("---"))
-                    uncommonResourceStr = "random";
-                int uncommonResId = getResources().getIdentifier(uncommonResourceStr, "drawable", getActivity().getPackageName());
-                ImageView uncommonImg = new ImageView(getContext());
-                uncommonImg.setImageResource(uncommonResId);
-                Bitmap uncommonBitmap = Macros.resize(uncommonImg.getDrawable(), 100, 100);
-                Drawable uncommonDrawable = new BitmapDrawable(getResources(), uncommonBitmap);
-                uncommonImg.setImageDrawable(uncommonDrawable);
-                uncommonCursor.close();
-
-                TextView uncommonLabel = Macros.getSplatoonTextview(uncommonAbility, getContext());
-                uncommonLabel.setTextColor(Color.parseColor(minusColor));
-
-                TextView minusLabel = Macros.getSplatoonTextview("-", getContext());
-                minusLabel.setTextSize(plusMinusSize);
-                minusLabel.setTextColor(Color.parseColor(minusColor));
-
-                final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
-
-                brandButton.setOnClickListener(new View.OnClickListener(){
-
-                    public void onClick(View v){
-                        if(brandBiasPopup.isShowing())
-                            brandBiasPopup.dismiss();
-                        else
-                            brandBiasPopup.showAsDropdown(v);
-                    }
-                });
-
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                layoutParams.gravity = Gravity.CENTER_VERTICAL;
-                LinearLayout brandLayout = new LinearLayout(getContext());
-                brandLayout.setOrientation(LinearLayout.HORIZONTAL);
-                brandLayout.addView(brandButton, layoutParams);
-                brandLayout.addView(brandLabel, layoutParams);
-
-                LinearLayout mainAbilityLayout = new LinearLayout(getContext());
-                mainAbilityLayout.setOrientation(LinearLayout.HORIZONTAL);
-                mainAbilityLayout.addView(mainAbilityImg, layoutParams);
-                mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
-
-                LinearLayout containerLayout = new LinearLayout(getContext());
-                containerLayout.setOrientation(LinearLayout.VERTICAL);
-                containerLayout.addView(brandLayout, layoutParams);
-                containerLayout.addView(mainAbilityLayout, layoutParams);
-                popUpWindow.setContentView(containerLayout);
-
-                LinearLayout commonLayout = new LinearLayout(getContext());
-                commonLayout.setOrientation(LinearLayout.HORIZONTAL);
-                commonLayout.addView(plusLabel, layoutParams);
-                commonLayout.addView(commonImg, layoutParams);
-                commonLayout.addView(commonLabel, layoutParams);
-
-                LinearLayout uncommonLayout = new LinearLayout(getContext());
-                uncommonLayout.setOrientation(LinearLayout.HORIZONTAL);
-                uncommonLayout.addView(minusLabel, layoutParams);
-                uncommonLayout.addView(uncommonImg, layoutParams);
-                uncommonLayout.addView(uncommonLabel, layoutParams);
-
-                LinearLayout biasContainerLayout = new LinearLayout(getContext());
-                biasContainerLayout.setOrientation(LinearLayout.VERTICAL);
-                biasContainerLayout.addView(commonLayout, layoutParams);
-                biasContainerLayout.addView(uncommonLayout, layoutParams);
-                brandBiasPopup.setContentView(biasContainerLayout);
+                setupGearPopup(gearPopup, btnTag, db);
             }
 
             // Add the final row to the layout if it was not already added
@@ -838,6 +703,173 @@ public class FragmentPagerSupport extends FragmentActivity {
             cursor.close();
 
             db.close();
+        }
+
+        /**
+         * Creates an ImageView that uses the resource found by formatting $imageName
+         *
+         * @param imageName     The name of the image resource to use for the ImageView
+         * @param resize        If true, resizes the image view to 100 x 100
+         * @return              The new ImageView that displays the resource with $imageName
+         */
+        private ImageView createImageFromName(String imageName, boolean resize) {
+            String resStr = imageName.toLowerCase().replace(' ', '_');
+            resStr = resStr.replace("(", "").replace(")", "");
+            if (resStr.equals("---"))
+                resStr = "random";
+
+            int resId = getResources().getIdentifier(resStr, "drawable", getActivity().getPackageName());
+            ImageView img = new ImageView(getContext());
+            img.setImageResource(resId);
+
+            if (resize){
+                Bitmap bitmap = Macros.resize(img.getDrawable(), 100, 100);
+                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                img.setImageDrawable(drawable);
+            }
+
+            return img;
+        }
+
+        /**
+         * Creates the GUI for the gear popup
+         *
+         * @param gearPopup     The popup to create the GUI for
+         * @param btnTag        The gearButton whose information will be displayed
+         * @param db            A database containing gear information
+         */
+        private void setupGearPopup(PopupWindow gearPopup, GearButton btnTag, SQLiteDatabase db){
+            // Create label for brand
+            TextView brandLabel = Macros.getSplatoonTextview(btnTag.getBrand(), getContext());
+
+            // Get the brand's logo
+            String brandResourceStr = btnTag.getBrand().toLowerCase().replace(' ','_');
+            ImageButton brandButton = new ImageButton(getContext());
+            int brandDrawable = getResources().getIdentifier(brandResourceStr, "drawable", getActivity().getPackageName());
+            brandButton.setImageResource(brandDrawable);
+
+            // Create label for main ability
+            TextView mainAbilityLabel = Macros.getSplatoonTextview(btnTag.getAbility(), getContext());
+
+            // Get the main ability's icon
+            ImageView mainAbilityImg = createImageFromName(btnTag.getAbility(), true);
+
+            // Create the popup for the brand button
+            final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
+
+            brandButton.setOnClickListener(new View.OnClickListener(){
+
+                public void onClick(View v){
+                    if(brandBiasPopup.isShowing())
+                        brandBiasPopup.dismiss();
+                    else
+                        brandBiasPopup.showAsDropdown(v);
+                }
+            });
+
+            setupBrandPopup(brandBiasPopup, btnTag.getBrand(), db);
+
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
+            // Layout for brand icon and name
+            LinearLayout brandLayout = new LinearLayout(getContext());
+            brandLayout.setOrientation(LinearLayout.HORIZONTAL);
+            brandLayout.addView(brandButton, layoutParams);
+            brandLayout.addView(brandLabel, layoutParams);
+
+            // Layout for main ability
+            LinearLayout mainAbilityLayout = new LinearLayout(getContext());
+            mainAbilityLayout.setOrientation(LinearLayout.HORIZONTAL);
+            mainAbilityLayout.addView(mainAbilityImg, layoutParams);
+            mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
+
+            // Layout for gear popup
+            LinearLayout containerLayout = new LinearLayout(getContext());
+            containerLayout.setOrientation(LinearLayout.VERTICAL);
+            containerLayout.addView(brandLayout, layoutParams);
+            containerLayout.addView(mainAbilityLayout, layoutParams);
+            gearPopup.setContentView(containerLayout);
+        }
+
+        /**
+         * Creates the GUI for the brand bias popup
+         *
+         * @param brandBiasPopup    The popup to create the GUI for
+         * @param brand             The brand whose information will be displayed
+         * @param db                A databse containing brand information
+         */
+        private void setupBrandPopup(PopupDialog brandBiasPopup, String brand, SQLiteDatabase db){
+            // Get the brand's common and uncommon abilities
+            Cursor biasCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_COMMON_ABILITY +
+                    ", " + GearContract.GearEntry.COLUMN_UNCOMMON_ABILITY + " FROM " +
+                    GearContract.GearEntry.TABLE_BRANDS + " WHERE " +
+                    GearContract.GearEntry.COLUMN_BRAND + " = ?",new String[] {brand});
+            biasCursor.moveToNext();
+            int commonRowId = biasCursor.getInt(0);
+            int uncommonRowId = biasCursor.getInt(1);
+
+            // Create an ImageView for the common ability
+            Cursor commonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
+                    " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                    GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(commonRowId)});
+            commonCursor.moveToNext();
+            String commonAbility = commonCursor.getString(0);
+            ImageView commonImg = createImageFromName(commonAbility, true);
+            commonCursor.close();
+
+            // Create the labels for the common ability
+            TextView commonLabel = Macros.getSplatoonTextview(commonAbility, getContext());
+            commonLabel.setTextColor(Color.parseColor(plusColor));
+
+            TextView plusLabel = Macros.getSplatoonTextview("+",getContext());
+            plusLabel.setTextSize(plusMinusSize);
+            plusLabel.setTextColor(Color.parseColor(plusColor));
+
+            // Create the ImageView for the uncommon ability
+            Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
+                    " FROM " + GearContract.GearEntry.TABLE_ABILITIES + " WHERE " +
+                    GearContract.GearEntry._ID + " = ?", new String[] {Integer.toString(uncommonRowId)});
+            uncommonCursor.moveToNext();
+            String uncommonAbility = uncommonCursor.getString(0);
+            ImageView uncommonImg = createImageFromName(uncommonAbility, true);
+            uncommonCursor.close();
+
+            // Create the labels for the uncommon ability
+            TextView uncommonLabel = Macros.getSplatoonTextview(uncommonAbility, getContext());
+            uncommonLabel.setTextColor(Color.parseColor(minusColor));
+
+            TextView minusLabel = Macros.getSplatoonTextview("-", getContext());
+            minusLabel.setTextSize(plusMinusSize);
+            minusLabel.setTextColor(Color.parseColor(minusColor));
+
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
+            // Layout for brand's common ability
+            LinearLayout commonLayout = new LinearLayout(getContext());
+            commonLayout.setOrientation(LinearLayout.HORIZONTAL);
+            commonLayout.addView(plusLabel, layoutParams);
+            commonLayout.addView(commonImg, layoutParams);
+            commonLayout.addView(commonLabel, layoutParams);
+
+            // Layout for brand's uncommon ability
+            LinearLayout uncommonLayout = new LinearLayout(getContext());
+            uncommonLayout.setOrientation(LinearLayout.HORIZONTAL);
+            uncommonLayout.addView(minusLabel, layoutParams);
+            uncommonLayout.addView(uncommonImg, layoutParams);
+            uncommonLayout.addView(uncommonLabel, layoutParams);
+
+            // Layout for brand bias popup
+            LinearLayout biasContainerLayout = new LinearLayout(getContext());
+            biasContainerLayout.setOrientation(LinearLayout.VERTICAL);
+            biasContainerLayout.addView(commonLayout, layoutParams);
+            biasContainerLayout.addView(uncommonLayout, layoutParams);
+            brandBiasPopup.setContentView(biasContainerLayout);
         }
 
         private void debugReadDatabase(SQLiteDatabase db){
