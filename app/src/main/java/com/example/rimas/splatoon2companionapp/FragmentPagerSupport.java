@@ -741,6 +741,40 @@ public class FragmentPagerSupport extends FragmentActivity {
             TextView gearLabel = Macros.createSplatoonTextView(btnTag.getName(), getContext());
             gearLabel.setTextSize(GEAR_NAME_SIZE);
 
+            // Create a layout for the brand information
+            LinearLayout brandLayout = createBrandLayout(btnTag, db);
+
+            // Create a layout for the main ability
+            LinearLayout mainAbilityLayout = createMainAbilityLayout(btnTag);
+
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
+            // Set up the gear label params
+            LinearLayout.LayoutParams gearLabelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            gearLabelParams.gravity = Gravity.CENTER_HORIZONTAL;
+
+            // Layout for gear popup
+            LinearLayout containerLayout = new LinearLayout(getContext());
+            containerLayout.setOrientation(LinearLayout.VERTICAL);
+            containerLayout.addView(gearLabel, gearLabelParams);
+            containerLayout.addView(brandLayout, layoutParams);
+            containerLayout.addView(mainAbilityLayout, layoutParams);
+            gearPopup.setContentView(containerLayout);
+        }
+
+        /**
+         * Creates a linear layout set up with the brand logo and label. Tapping the logo spawns
+         *  another popup with brand bias information.
+         *
+         * @param btnTag    The Gear Button whose brand to display
+         * @param db        A database with brand information
+         * @return          A linear layout with the brand logo and label
+         */
+        private LinearLayout createBrandLayout(GearButton btnTag, SQLiteDatabase db){
             // Create label for brand
             TextView brandLabel = Macros.createSplatoonTextView(btnTag.getBrand(), getContext());
 
@@ -749,12 +783,6 @@ public class FragmentPagerSupport extends FragmentActivity {
             ImageButton brandButton = new ImageButton(getContext());
             int brandDrawable = getResources().getIdentifier(brandResourceStr, "drawable", getActivity().getPackageName());
             brandButton.setImageResource(brandDrawable);
-
-            // Create label for main ability
-            TextView mainAbilityLabel = Macros.createSplatoonTextView(btnTag.getAbility(), getContext());
-
-            // Get the main ability's icon
-            ImageView mainAbilityImg = createImageFromName(btnTag.getAbility(), true);
 
             // Create the popup for the brand button
             final PopupDialog brandBiasPopup = new PopupDialog(getActivity());
@@ -782,24 +810,28 @@ public class FragmentPagerSupport extends FragmentActivity {
             brandLayout.addView(brandButton, layoutParams);
             brandLayout.addView(brandLabel, layoutParams);
 
+            return brandLayout;
+        }
+
+        private LinearLayout createMainAbilityLayout(GearButton btnTag){
+            // Create label for main ability
+            TextView mainAbilityLabel = Macros.createSplatoonTextView(btnTag.getAbility(), getContext());
+
+            // Get the main ability's icon
+            ImageView mainAbilityImg = createImageFromName(btnTag.getAbility(), true);
+
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
             // Layout for main ability
             LinearLayout mainAbilityLayout = new LinearLayout(getContext());
             mainAbilityLayout.setOrientation(LinearLayout.HORIZONTAL);
             mainAbilityLayout.addView(mainAbilityImg, layoutParams);
             mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
 
-            // Set up the gear label params
-            LinearLayout.LayoutParams gearLabelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            gearLabelParams.gravity = Gravity.CENTER_HORIZONTAL;
-
-            // Layout for gear popup
-            LinearLayout containerLayout = new LinearLayout(getContext());
-            containerLayout.setOrientation(LinearLayout.VERTICAL);
-            containerLayout.addView(gearLabel, gearLabelParams);
-            containerLayout.addView(brandLayout, layoutParams);
-            containerLayout.addView(mainAbilityLayout, layoutParams);
-            gearPopup.setContentView(containerLayout);
+            return mainAbilityLayout;
         }
 
         /**
