@@ -747,25 +747,36 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Create a layout for the rarity
             LinearLayout rarityLayout = createRarityLayout(btnTag);
 
+            // Create a layout for the acquisition method
+            LinearLayout acquisitionLayout = createAcquisitionMethodLayout(btnTag);
+
             // Create a layout for the main ability
             LinearLayout mainAbilityLayout = createMainAbilityLayout(btnTag);
 
             // Set up the layout params object
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
 
             // Set up the gear label params
             LinearLayout.LayoutParams gearLabelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             gearLabelParams.gravity = Gravity.CENTER_HORIZONTAL;
 
+            // Combine rarity and acquisition layouts
+            LinearLayout rareAcquiLayout = new LinearLayout(getContext());
+            rareAcquiLayout.setOrientation(LinearLayout.HORIZONTAL);
+            layoutParams.gravity = Gravity.LEFT;
+            rareAcquiLayout.addView(rarityLayout, layoutParams);
+            layoutParams.gravity = Gravity.RIGHT;
+            rareAcquiLayout.addView(acquisitionLayout, layoutParams);
+
             // Layout for gear popup
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
             LinearLayout containerLayout = new LinearLayout(getContext());
             containerLayout.setOrientation(LinearLayout.VERTICAL);
             containerLayout.addView(gearLabel, gearLabelParams);
             containerLayout.addView(brandLayout, layoutParams);
-            containerLayout.addView(rarityLayout, layoutParams);
+            containerLayout.addView(rareAcquiLayout, layoutParams);
             containerLayout.addView(mainAbilityLayout, layoutParams);
             gearPopup.setContentView(containerLayout);
         }
@@ -842,7 +853,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Set up the layout params object
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+            layoutParams.gravity = Gravity.LEFT;
 
             // Create the layout for the rarity
             LinearLayout rarityLayout = new LinearLayout(getContext());
@@ -863,6 +874,55 @@ public class FragmentPagerSupport extends FragmentActivity {
             }
 
             return rarityLayout;
+        }
+
+        /**
+         * Creates a layout with the acquisition method and an icon to go with it
+         *
+         * @param btnTag    The gear whose acquisition to display
+         * @return          A layout formatted with the acquisition method information and icon
+         */
+        private LinearLayout createAcquisitionMethodLayout(GearButton btnTag){
+            // Get the acquisition method
+            String acquisitionMethod = btnTag.getAcquisitionMethod();
+
+            // Tokenize the acquisition method
+            StringTokenizer tokens = new StringTokenizer(acquisitionMethod, " ");
+
+            // Set up the icon and text
+            ImageView icon;
+            acquisitionMethod = tokens.nextToken();
+
+            if(acquisitionMethod.equals("Cash")){
+                icon = createImageFromName("cash", false);
+                acquisitionMethod = tokens.nextToken();
+            }
+            else if(acquisitionMethod.equals("---")){
+                icon = createImageFromName("random", true);
+            }
+            else if(btnTag.getBrand().equals("amiibo")){
+                String formattedAcquisition = "amiibo_" + acquisitionMethod.toLowerCase().replace(' ', '_');
+                icon = createImageFromName(formattedAcquisition, false);
+            }
+            else{
+                icon = createImageFromName(acquisitionMethod.toLowerCase().replace(' ', '_'), false);
+            }
+
+            TextView label = Macros.createSplatoonTextView(acquisitionMethod, getContext());
+
+            // Create the layout for the rarity
+            LinearLayout acquisitionLayout = new LinearLayout(getContext());
+
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.RIGHT;
+
+            acquisitionLayout.addView(icon, layoutParams);
+            acquisitionLayout.addView(label, layoutParams);
+
+            return acquisitionLayout;
+
         }
 
         /**
