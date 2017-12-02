@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -756,6 +757,17 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Set up the layout params object
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
+            // Set up the layout params object
+            RelativeLayout.LayoutParams leftParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            leftParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+            // Set up the layout params object
+            RelativeLayout.LayoutParams rightParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            rightParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
             // Set up the gear label params
             LinearLayout.LayoutParams gearLabelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -763,20 +775,16 @@ public class FragmentPagerSupport extends FragmentActivity {
             gearLabelParams.gravity = Gravity.CENTER_HORIZONTAL;
 
             // Combine rarity and acquisition layouts
-            LinearLayout rareAcquiLayout = new LinearLayout(getContext());
-            rareAcquiLayout.setOrientation(LinearLayout.HORIZONTAL);
-            layoutParams.gravity = Gravity.LEFT;
-            rareAcquiLayout.addView(rarityLayout, layoutParams);
-            layoutParams.gravity = Gravity.RIGHT;
-            rareAcquiLayout.addView(acquisitionLayout, layoutParams);
+            RelativeLayout rareAcquiLayout = new RelativeLayout(getContext());
+            rareAcquiLayout.addView(rarityLayout, leftParams);
+            rareAcquiLayout.addView(acquisitionLayout, rightParams);
 
             // Layout for gear popup
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
             LinearLayout containerLayout = new LinearLayout(getContext());
             containerLayout.setOrientation(LinearLayout.VERTICAL);
             containerLayout.addView(gearLabel, gearLabelParams);
             containerLayout.addView(brandLayout, layoutParams);
-            containerLayout.addView(rareAcquiLayout, layoutParams);
+            containerLayout.addView(rareAcquiLayout, leftParams);
             containerLayout.addView(mainAbilityLayout, layoutParams);
             gearPopup.setContentView(containerLayout);
         }
