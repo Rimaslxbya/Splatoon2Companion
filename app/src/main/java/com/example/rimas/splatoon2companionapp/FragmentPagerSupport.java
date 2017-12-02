@@ -471,9 +471,10 @@ public class FragmentPagerSupport extends FragmentActivity {
         int mNum;
         TreeMap<String, GearButton> gearButtons;
 
-        private final float plusMinusSize = 24;
-        private final String plusColor = "#1A8934";
-        private final String minusColor = "#A02B37";
+        private final float GEAR_NAME_SIZE = 24;
+        private final float PLUS_MINUS_SIZE = 24;
+        private final String PLUS_COLOR = "#1A8934";
+        private final String MINUS_COLOR = "#A02B37";
 
         /**
          * Create a new instance of CountingFragment, providing "num"
@@ -736,6 +737,10 @@ public class FragmentPagerSupport extends FragmentActivity {
          * @param db            A database containing gear information
          */
         private void setupGearPopup(PopupWindow gearPopup, GearButton btnTag, SQLiteDatabase db){
+            // Create label for Gear name
+            TextView gearLabel = Macros.createSplatoonTextView(btnTag.getName(), getContext());
+            gearLabel.setTextSize(GEAR_NAME_SIZE);
+
             // Create label for brand
             TextView brandLabel = Macros.createSplatoonTextView(btnTag.getBrand(), getContext());
 
@@ -783,9 +788,15 @@ public class FragmentPagerSupport extends FragmentActivity {
             mainAbilityLayout.addView(mainAbilityImg, layoutParams);
             mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
 
+            // Set up the gear label params
+            LinearLayout.LayoutParams gearLabelParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            gearLabelParams.gravity = Gravity.CENTER_HORIZONTAL;
+
             // Layout for gear popup
             LinearLayout containerLayout = new LinearLayout(getContext());
             containerLayout.setOrientation(LinearLayout.VERTICAL);
+            containerLayout.addView(gearLabel, gearLabelParams);
             containerLayout.addView(brandLayout, layoutParams);
             containerLayout.addView(mainAbilityLayout, layoutParams);
             gearPopup.setContentView(containerLayout);
@@ -819,11 +830,11 @@ public class FragmentPagerSupport extends FragmentActivity {
 
             // Create the labels for the common ability
             TextView commonLabel = Macros.createSplatoonTextView(commonAbility, getContext());
-            commonLabel.setTextColor(Color.parseColor(plusColor));
+            commonLabel.setTextColor(Color.parseColor(PLUS_COLOR));
 
             TextView plusLabel = Macros.createSplatoonTextView("+",getContext());
-            plusLabel.setTextSize(plusMinusSize);
-            plusLabel.setTextColor(Color.parseColor(plusColor));
+            plusLabel.setTextSize(PLUS_MINUS_SIZE);
+            plusLabel.setTextColor(Color.parseColor(PLUS_COLOR));
 
             // Create the ImageView for the uncommon ability
             Cursor uncommonCursor = db.rawQuery("SELECT " + GearContract.GearEntry.COLUMN_ABILITY +
@@ -836,11 +847,11 @@ public class FragmentPagerSupport extends FragmentActivity {
 
             // Create the labels for the uncommon ability
             TextView uncommonLabel = Macros.createSplatoonTextView(uncommonAbility, getContext());
-            uncommonLabel.setTextColor(Color.parseColor(minusColor));
+            uncommonLabel.setTextColor(Color.parseColor(MINUS_COLOR));
 
             TextView minusLabel = Macros.createSplatoonTextView("-", getContext());
-            minusLabel.setTextSize(plusMinusSize);
-            minusLabel.setTextColor(Color.parseColor(minusColor));
+            minusLabel.setTextSize(PLUS_MINUS_SIZE);
+            minusLabel.setTextColor(Color.parseColor(MINUS_COLOR));
 
             // Set up the layout params object
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
