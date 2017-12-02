@@ -744,6 +744,9 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Create a layout for the brand information
             LinearLayout brandLayout = createBrandLayout(btnTag, db);
 
+            // Create a layout for the rarity
+            LinearLayout rarityLayout = createRarityLayout(btnTag);
+
             // Create a layout for the main ability
             LinearLayout mainAbilityLayout = createMainAbilityLayout(btnTag);
 
@@ -762,6 +765,7 @@ public class FragmentPagerSupport extends FragmentActivity {
             containerLayout.setOrientation(LinearLayout.VERTICAL);
             containerLayout.addView(gearLabel, gearLabelParams);
             containerLayout.addView(brandLayout, layoutParams);
+            containerLayout.addView(rarityLayout, layoutParams);
             containerLayout.addView(mainAbilityLayout, layoutParams);
             gearPopup.setContentView(containerLayout);
         }
@@ -832,6 +836,33 @@ public class FragmentPagerSupport extends FragmentActivity {
             mainAbilityLayout.addView(mainAbilityLabel, layoutParams);
 
             return mainAbilityLayout;
+        }
+
+        private LinearLayout createRarityLayout(GearButton btnTag){
+            // Set up the layout params object
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+
+            // Create the layout for the rarity
+            LinearLayout rarityLayout = new LinearLayout(getContext());
+
+            // Get the rarity
+            int rarity = btnTag.getRarity();
+
+            // Place filled stars equal to the rarity
+            for(int i = 0; i < rarity; i++){
+                ImageView filledStar = createImageFromName("star_full", false);
+                rarityLayout.addView(filledStar, layoutParams);
+            }
+
+            // Fill in the rest of the layout with empty stars
+            for(int i = 0; i < GearButton.RARITY_MAX - rarity; i++){
+                ImageView filledStar = createImageFromName("star_empty", false);
+                rarityLayout.addView(filledStar, layoutParams);
+            }
+
+            return rarityLayout;
         }
 
         /**

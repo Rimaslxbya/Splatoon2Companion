@@ -13,6 +13,7 @@ public class GearButton extends android.support.v7.widget.AppCompatImageButton i
 
     public static final String CHECKED = "Checked";
     public static final String UNCHECKED = "Unchecked";
+    public static final int RARITY_MAX = 3;
 
     private String name;
     private String brand;
