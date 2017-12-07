@@ -182,7 +182,7 @@ public class FragmentPagerSupport extends FragmentActivity {
         String ability = tokens.nextToken();
         String rarity = tokens.nextToken();
 
-        String drawableName = type + "_" + name.replace(" ", "_").toLowerCase();
+        String drawableName = type + "_" + name.replace(" ", "_").replace("'", "").replace("&","").toLowerCase();
         int drawableResource = getResources().getIdentifier(drawableName, "drawable", getPackageName());
 
         // If no drawable resource is found, use the resource at the top
