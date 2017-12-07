@@ -894,27 +894,29 @@ public class FragmentPagerSupport extends FragmentActivity {
             // Get the acquisition method
             String acquisitionMethod = btnTag.getAcquisitionMethod();
 
-            // Tokenize the acquisition method
-            StringTokenizer tokens = new StringTokenizer(acquisitionMethod, " ");
-
             // Set up the icon and text
             ImageView icon;
-            acquisitionMethod = tokens.nextToken();
 
-            if(acquisitionMethod.equals("Cash")){
+            if(acquisitionMethod.contains("Cash")){
+                // Tokenize the acquisition method
+                StringTokenizer tokens = new StringTokenizer(acquisitionMethod, " ");
+
+                acquisitionMethod = tokens.nextToken();
                 icon = createImageFromName("cash", false);
                 acquisitionMethod = tokens.nextToken();
             }
             else if(acquisitionMethod.equals("---")){
                 icon = createImageFromName("random", true);
             }
-            else if(btnTag.getBrand().equals("amiibo")){
+            else if(btnTag.getBrand().equals("amiibo") || acquisitionMethod.equals("Callie") || acquisitionMethod.equals("Marie")){
                 String formattedAcquisition = "amiibo_" + acquisitionMethod.toLowerCase().replace(' ', '_');
                 icon = createImageFromName(formattedAcquisition, false);
             }
             else{
                 icon = createImageFromName(acquisitionMethod.toLowerCase().replace(' ', '_'), false);
             }
+
+            acquisitionMethod = acquisitionMethod.replace("Splatoon 2 ", "").replace("Splatoon ", "");
 
             TextView label = Macros.createSplatoonTextView(acquisitionMethod, getContext());
 
