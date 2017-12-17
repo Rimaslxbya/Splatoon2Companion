@@ -600,19 +600,23 @@ public class FragmentPagerSupport extends FragmentActivity {
 
                 final PopupWindow gearPopup = new PopupWindow(getActivity());
                 gearPopup.setOutsideTouchable(true);
+
                 btnTag.setOnClickListener(new View.OnClickListener(){
 
                     public void onClick(View v){
                         GearButton button = (GearButton) v;
 
                         button.flipToggledState();
+                    }
+                });
 
-                        boolean toggled = button.getToggledState();
+                btnTag.setOnLongClickListener(new View.OnLongClickListener(){
 
-                        if(toggled)
-                            gearPopup.showAsDropDown(button);
-                        else
-                            gearPopup.dismiss();
+                    public boolean onLongClick(View v){
+                        GearButton button = (GearButton) v;
+                        gearPopup.showAsDropDown(button);
+                        
+                        return true;
                     }
                 });
 
